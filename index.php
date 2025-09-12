@@ -21,8 +21,8 @@
           you’ve lost or found, and help reunite belongings with the right people.
         </p>
         <div class="hero-actions">
-          <a href="#" class="btn btn-primary">Report Lost Item</a>
-          <a href="#" class="btn btn-secondary">Report Found Item</a>
+          <a href="report-lost.php" class="btn btn-primary">Report Lost Item</a>
+          <a href="report-found.php" class="btn btn-secondary">Report Found Item</a>
         </div>
       </div>
     </section>
