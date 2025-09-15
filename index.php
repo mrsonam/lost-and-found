@@ -6,11 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lost & Found - Homepage</title>
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
-  <?php include 'components/navbar.php'; ?>
+  <?php include 'includes/navbar.php'; ?>
   <main>
     <!-- HERO -->
     <section class="hero">
@@ -136,7 +135,7 @@
       </div>
     </section>
   </main>
-  <?php include 'components/footer.php'; ?>
+  <?php include 'includes/footer.php'; ?>
 </body>
 
 </html>
