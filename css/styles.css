@@ -683,3 +683,95 @@ body {
 
 
 /* Contact Us End */
+
+
+/* Available Items Page - Scoped CSS */
+
+
+.available-items-page {
+  padding: 40px 20px;
+  background-color: #f0f4f8;
+}
+
+.available-items-page .available-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.available-items-page .available-header h2 {
+  font-size: 32px;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.available-items-page .available-search {
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+  display: flex;
+  gap: 12px;
+}
+
+.available-items-page .available-search input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.available-items-page .available-search button {
+  padding: 12px 20px;
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.available-items-page .available-search button:hover {
+  background-color: #1d4ed8;
+}
+
+.available-items-page .items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.available-items-page .item {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.available-items-page .item:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.available-items-page .item img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.available-items-page .item-body {
+  padding: 14px 16px;
+}
+
+.available-items-page .item-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.available-items-page .item-meta {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+
+/* Available Items Page end */
