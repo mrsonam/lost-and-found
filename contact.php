@@ -9,7 +9,7 @@
 </head>
 
 <body>
-  <?php include 'components/navbar.php'; ?>
+  <?php include 'includes/navbar.php'; ?>
 
   <main>
     <!-- Hero -->
@@ -81,7 +81,7 @@
     </section>
   </main>
 
-  <?php include 'components/footer.php'; ?>
+  <?php include 'includes/footer.php'; ?>
 </body>
 
 </html>
