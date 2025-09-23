@@ -83,11 +83,11 @@ include 'config.php';
       justify-content: center;
       width: 60px;
       height: 60px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #14b8a6;
       border-radius: 50%;
       color: white;
       font-size: 1.8rem;
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 6px 20px rgba(20, 184, 166, 0.3);
       transition: all 0.3s ease;
       cursor: pointer;
       flex-shrink: 0;
@@ -95,7 +95,7 @@ include 'config.php';
     
     .search-icon-container:hover {
       transform: scale(1.1) rotate(5deg);
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 8px 25px rgba(20, 184, 166, 0.4);
     }
     
     .search-container {
@@ -120,13 +120,13 @@ include 'config.php';
     
     .available-search input:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #14b8a6;
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
     }
     
     .available-search button {
       padding: 1rem 2rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #14b8a6;
       color: white;
       border: none;
       border-radius: 0 8px 8px 0;
@@ -135,13 +135,13 @@ include 'config.php';
       transition: all 0.3s;
       min-width: 120px;
       font-weight: 600;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
     }
     
     .available-search button:hover {
-      background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+      background: #0d9488;
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 6px 20px rgba(20, 184, 166, 0.4);
     }
     
     .clear-search {
@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     searchInput.addEventListener('focus', function() {
         this.style.transform = 'scale(1.02)';
-        this.style.borderColor = '#667eea';
+        this.style.borderColor = '#14b8a6';
     });
 
     searchInput.addEventListener('blur', function() {
