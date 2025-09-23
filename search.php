@@ -7,6 +7,7 @@
   <title>Lost & Found - Homepage</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
     <?php include 'includes/navbar.php'; ?>
 
@@ -29,7 +30,6 @@
         <div class="item-title">Brown Leather Wallet</div>
         <div class="item-meta">Found at Main Street</div>
       </div>
-    </div>
 
     <div class="item">
       <img src="images/smart watch.jpg" alt="Smart Watch" style="object-fit: cover; height: 200px; width: 100%; border-radius: 8px 8px 0 0;" />
@@ -37,7 +37,6 @@
         <div class="item-title">Smart Watch</div>
         <div class="item-meta">Item found by the lift</div>
       </div>
-    </div>
 
     <div class="item">
       <img src="images/bag.jpg" alt="Red Backpack" style="object-fit: cover; height: 200px; width: 100%; border-radius: 8px 8px 0 0;" />

@@ -11,15 +11,18 @@
   <style>
     /* Floating labels without background for Report Found page */
     .found-form-card .floating-form label {
-      background: none !important; /* removes white background */
-      padding: 0 4px; /* small padding so text doesn't touch borders */
-      color: #555; /* keep label color readable */
+      background: none !important;
+      /* removes white background */
+      padding: 0 4px;
+      /* small padding so text doesn't touch borders */
+      color: #555;
+      /* keep label color readable */
     }
   </style>
 </head>
 
 <body>
-  <?php include 'components/navbar.php'; ?>
+  <?php include 'includes/navbar.php'; ?>
 
   <main>
     <!-- Hero -->
@@ -93,14 +96,14 @@
     </section>
   </main>
 
-  <?php include 'components/footer.php'; ?>
+  <?php include 'includes/footer.php'; ?>
 
   <script>
     // Image preview
     const input = document.getElementById('item-image');
     const preview = document.getElementById('preview-container');
 
-    input.addEventListener('change', function () {
+    input.addEventListener('change', function() {
       preview.innerHTML = '';
       const file = this.files[0];
       if (file) {
