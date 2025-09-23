@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <?php include 'components/navbar.php'; ?>
+    <?php include 'includes/navbar.php'; ?>
 
 <main>
 <section class="available-items-page">
@@ -24,32 +24,100 @@
 
   <div class="items-grid">
     <div class="item">
-      <img src="https://via.placeholder.com/300x180" alt="Item 1" />
+      <img src="images/wallet.jpg" alt="Brown Leather Wallet" style="object-fit: cover; height: 200px; width: 100%; border-radius: 8px 8px 0 0;" />
       <div class="item-body">
-        <div class="item-title">Black Wallet</div>
+        <div class="item-title">Brown Leather Wallet</div>
         <div class="item-meta">Found at Main Street</div>
       </div>
     </div>
 
     <div class="item">
-      <img src="https://via.placeholder.com/300x180" alt="Item 2" />
+      <img src="images/smart watch.jpg" alt="Smart Watch" style="object-fit: cover; height: 200px; width: 100%; border-radius: 8px 8px 0 0;" />
       <div class="item-body">
-        <div class="item-title">Silver Bracelet</div>
-        <div class="item-meta">Reported lost near Park Avenue</div>
+        <div class="item-title">Smart Watch</div>
+        <div class="item-meta">Item found by the lift</div>
       </div>
     </div>
 
     <div class="item">
-      <img src="https://via.placeholder.com/300x180" alt="Item 3" />
+      <img src="images/bag.jpg" alt="Red Backpack" style="object-fit: cover; height: 200px; width: 100%; border-radius: 8px 8px 0 0;" />
       <div class="item-body">
-        <div class="item-title">Set of Keys</div>
-        <div class="item-meta">Found outside Library</div>
+        <div class="item-title">Red Backpack</div>
+        <div class="item-meta">Reported lost near Park Avenue</div>
       </div>
     </div>
-</body>
-
+  </div>
+</section>
 </main>
-  <?php include 'components/footer.php'; ?>
-</body>
 
+<?php include 'includes/footer.php'; ?>
+
+<script>
+// Add hover animations and interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Item hover effects
+    const items = document.querySelectorAll('.item');
+    
+    items.forEach(item => {
+        // Mouse enter animation
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'all 0.3s ease';
+            this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+        });
+        
+        // Mouse leave animation
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '';
+        });
+        
+        // Click animation
+        item.addEventListener('mousedown', function() {
+            this.style.transform = 'translateY(-2px) scale(0.98)';
+        });
+        
+        item.addEventListener('mouseup', function() {
+            this.style.transform = 'translateY(-5px) scale(1)';
+        });
+    });
+    
+    // Search button animation
+    const searchBtn = document.querySelector('.available-search button');
+    const searchInput = document.querySelector('.available-search input');
+    
+    if (searchBtn) {
+        searchBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05)';
+            this.style.transition = 'transform 0.2s ease';
+        });
+        
+        searchBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+        
+        searchBtn.addEventListener('mousedown', function() {
+            this.style.transform = 'scale(0.95)';
+        });
+        
+        searchBtn.addEventListener('mouseup', function() {
+            this.style.transform = 'scale(1.05)';
+        });
+    }
+    
+    // Search input focus animation
+    if (searchInput) {
+        searchInput.addEventListener('focus', function() {
+            this.style.transform = 'scale(1.02)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        searchInput.addEventListener('blur', function() {
+            this.style.transform = 'scale(1)';
+        });
+    }
+});
+</script>
+
+</body>
 </html>
