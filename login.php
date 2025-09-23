@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if both fields are filled
     if (empty($email) || empty($password)) {
+        error_log("Login Failed - Missing email or password at " . date('Y-m-d H:i:s'));
         $error_message = 'Please enter both email and password.';
     } else {
         $connection = getDBConnection();
@@ -40,10 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $result = executeQuery($connection, "INSERT INTO user_sessions (user_id, session_token, expires_at) VALUES (?, ?, ?)", "iss", [$user['id'], $session_token, $expires_at]);
 
             if (!$result) {
-                error_log("Failed to insert session token for user: " . $user['id']);
+                error_log("Login Error - Failed to insert session token for user ID: " . $user['id'] . " at " . date('Y-m-d H:i:s'));
+                error_log("Login Error - Database error: " . mysqli_error($connection));
                 $error_message = 'Login failed. Please try again.';
             } else {
                 $_SESSION['session_token'] = $session_token;
+                error_log("Login Success - User ID: " . $user['id'] . " logged in successfully at " . date('Y-m-d H:i:s'));
 
                 // Redirect to intended page or home
                 $redirect = $_GET['redirect'] ?? 'index.php';
@@ -51,6 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
             }
         } else {
+            if (!$user) {
+                error_log("Login Failed - User not found or inactive for email: " . $email . " at " . date('Y-m-d H:i:s'));
+            } else {
+                error_log("Login Failed - Invalid password for email: " . $email . " at " . date('Y-m-d H:i:s'));
+            }
             $error_message = 'Invalid email or password.';
         }
 

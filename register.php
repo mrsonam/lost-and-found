@@ -16,12 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate form data
     if (empty($email) || empty($password) || empty($first_name) || empty($last_name)) {
+        error_log("Registration Failed - Missing required fields at " . date('Y-m-d H:i:s'));
         $error_message = 'Please fill in all required fields.';
     } elseif ($password !== $confirm_password) {
+        error_log("Registration Failed - Password mismatch for email: " . $email . " at " . date('Y-m-d H:i:s'));
         $error_message = 'Passwords do not match.';
     } elseif (strlen($password) < 6) {
+        error_log("Registration Failed - Password too short for email: " . $email . " at " . date('Y-m-d H:i:s'));
         $error_message = 'Password must be at least 6 characters long.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        error_log("Registration Failed - Invalid email format: " . $email . " at " . date('Y-m-d H:i:s'));
         $error_message = 'Please enter a valid email address.';
     } else {
         $connection = getDBConnection();
@@ -30,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $existing_user = getSingleRow($connection, "SELECT id FROM users WHERE email = ?", "s", [$email]);
 
         if ($existing_user) {
+            error_log("Registration Failed - Email already exists: " . $email . " at " . date('Y-m-d H:i:s'));
             $error_message = 'Email already exists.';
         } else {
             // Encrypt password for security
@@ -39,10 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $result = executeQuery($connection, "INSERT INTO users (email, password_hash, first_name, last_name, phone) VALUES (?, ?, ?, ?, ?)", "sssss", [$email, $password_hash, $first_name, $last_name, $phone]);
 
             if ($result) {
+                error_log("Registration Success - New user registered: " . $email . " at " . date('Y-m-d H:i:s'));
                 $success_message = 'Registration successful! You can now log in.';
                 // Clear form data
                 $email = $first_name = $last_name = $phone = '';
             } else {
+                error_log("Registration Error - Database insert failed for email: " . $email . " at " . date('Y-m-d H:i:s'));
+                error_log("Registration Error - Database error: " . mysqli_error($connection));
                 $error_message = 'Registration failed. Please try again.';
             }
         }

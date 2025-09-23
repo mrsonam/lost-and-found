@@ -46,7 +46,14 @@ function executeQuery($connection, $query, $types = "", $params = [])
         return false;
     }
 
-    $result = mysqli_stmt_get_result($stmt);
+    // For SELECT queries, return the result set
+    // For INSERT/UPDATE/DELETE queries, return true on success
+    if (stripos(trim($query), 'SELECT') === 0) {
+        $result = mysqli_stmt_get_result($stmt);
+    } else {
+        $result = true; // INSERT/UPDATE/DELETE success
+    }
+
     mysqli_stmt_close($stmt);
 
     return $result;
