@@ -1,3 +1,29 @@
+<?php
+// Include database config
+require_once "config.php";
+
+// Check if form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name    = $conn->real_escape_string($_POST['name']);
+    $email   = $conn->real_escape_string($_POST['email']);
+    $phone = $conn->real_escape_string($_POST['phone']);
+    $subject = $conn->real_escape_string($_POST['subject']);
+    $message = $conn->real_escape_string($_POST['message']);
+
+    // Insert query
+    $sql = "INSERT INTO contact (name, email, phone, subject, message)
+            VALUES ('$name', '$email', '$phone', '$subject', '$message')";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Message sent successfully!";
+    } else {
+        echo "Error: " . $conn->error;
+    }
+}
+
+$conn->close();
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -57,7 +83,7 @@
       <div class="container">
         <div class="contact-form-card fade-in-left">
           <h2>Send a Message</h2>
-          <form action="#" method="post" class="floating-form">
+          <form action="contact.php" method="post" class="floating-form">
             <div class="form-group">
               <input type="text" id="name" name="name" required>
               <label for="name">Full Name</label>
@@ -65,6 +91,10 @@
             <div class="form-group">
               <input type="email" id="email" name="email" required>
               <label for="email">Email Address</label>
+            </div>
+            <div class="form-group">
+              <input type="integer" id="phone" name="phone" required>
+              <label for="phone">Phone Number</label>
             </div>
             <div class="form-group">
               <input type="text" id="subject" name="subject" required>

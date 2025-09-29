@@ -64,6 +64,17 @@ CREATE TABLE IF NOT EXISTS user_sessions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Contact us table to store client querys
+CREATE TABLE contact (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    phone Integer(10) NOT NULL,
+    subject VARCHAR(200) NOT NULL,
+    message TEXT NOT NULL,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert default categories
 INSERT INTO categories (name, description) VALUES
 ('Electronics', 'Phones, laptops, tablets, cameras, and other electronic devices'),
