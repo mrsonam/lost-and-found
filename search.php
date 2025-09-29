@@ -190,14 +190,7 @@ include 'config.php';
       background-color: #fff9c4 !important;
       border: 2px solid #ffd54f !important;
     }
-    
-    footer {
-      background: #2c3e50;
-      color: white;
-      text-align: center;
-      padding: 2rem;
-      margin-top: 3rem;
-    }
+  
     
     .page-title {
       text-align: center;
