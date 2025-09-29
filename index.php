@@ -124,24 +124,6 @@ mysqli_close($connection);
                 $image_src = 'images/placeholder.jpg'; // Default placeholder
                 if (!empty($item['image_path']) && file_exists($item['image_path'])) {
                   $image_src = $item['image_path'];
-                } else {
-                  // Use default images based on category or item type
-                  switch (strtolower($item['category_name'])) {
-                    case 'electronics':
-                      $image_src = 'images/phone.jpg';
-                      break;
-                    case 'accessories':
-                      $image_src = 'images/wallet.jpg';
-                      break;
-                    case 'keys':
-                      $image_src = 'images/key.jpg';
-                      break;
-                    case 'clothing':
-                      $image_src = 'images/bag.jpg';
-                      break;
-                    default:
-                      $image_src = $item['item_type'] === 'lost' ? 'images/phone.jpg' : 'images/wallet.jpg';
-                  }
                 }
 
                 // Format date
