@@ -23,25 +23,16 @@ function requireLogin()
 }
 
 // Get information about the currently logged-in user
-function getCurrentUser()
-{
-    if (!isLoggedIn()) {
+function getCurrentUser() {
+    if (!isset($_SESSION['user_id'])) {
         return null;
     }
-
-    // Validate session with database
-    if (!validateSession()) {
-        return null;
-    }
-
-    // Return user information from session
-    return [
-        'id' => $_SESSION['user_id'],
-        'email' => $_SESSION['email'],
-        'first_name' => $_SESSION['first_name'],
-        'last_name' => $_SESSION['last_name']
-    ];
+    $connection = getDBConnection();
+    $user = getSingleRow($connection, "SELECT * FROM users WHERE id = ?", "i", [$_SESSION['user_id']]);
+    mysqli_close($connection);
+    return $user;
 }
+
 
 // Log out the current user
 function logout()

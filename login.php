@@ -25,6 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Find user by email in database
         $user = getSingleRow($connection, "SELECT id, email, password_hash, first_name, last_name FROM users WHERE email = ? AND is_active = 1", "s", [$email]);
 
+        $user = getSingleRow(
+            $connection,
+            "SELECT * FROM users WHERE email = ? AND otp_code IS NULL",
+            "s",
+            [$email]
+        );
         // Check if password matches
         if ($user && password_verify($password, $user['password_hash'])) {
             // Store user info in session
