@@ -250,6 +250,14 @@ body {
   gap: 8px;
   flex-wrap: wrap;
 }
+
+.item-card-meta .category {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
 .item-card-date {
   color: #6b7280;
   font-size: 14px;
@@ -266,6 +274,28 @@ body {
 }
 .badge-found {
   background: #14b8a6;
+}
+
+/* No items message */
+.no-items {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.no-items p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.no-items a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.no-items a:hover {
+  text-decoration: underline;
 }
 
 /* Footer */
@@ -504,7 +534,6 @@ body {
   color: #2563eb;
 }
 
-
 /* Focus underline animation */
 .floating-form input:focus,
 .floating-form textarea:focus,
@@ -530,15 +559,14 @@ body {
   background: #1e40af;
 }
 
-
 /* Report Found End */
 
 /* Contact us */
 
 /* Hero */
 .contact-hero {
-  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-              url("../images/contact-bg.jpg") center/cover no-repeat;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("../images/contact-bg.jpg") center/cover no-repeat;
   color: #fff;
   text-align: center;
   padding: 100px 20px;
@@ -726,7 +754,6 @@ body {
   }
 }
 
-
 .floating-shape {
   position: absolute;
   width: 35px;
@@ -735,7 +762,11 @@ body {
   opacity: 0.7;
   animation: floatShape 12s infinite ease-in-out;
   pointer-events: none;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.7), transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.7),
+    transparent 70%
+  );
 }
 
 /* Shape types */
@@ -775,30 +806,389 @@ body {
   left: 55%;
 }
 
-.floating-shape:nth-child(1) { background: radial-gradient(circle, #ffafbd, #ffc3a0); top: 10%; left: 10%; animation-duration: 14s; }
-.floating-shape:nth-child(2) { background: radial-gradient(circle, #a1c4fd, #c2e9fb); top: 30%; left: 50%; animation-duration: 16s; }
-.floating-shape:nth-child(3) { background: radial-gradient(circle, #fbc2eb, #a6c1ee); top: 60%; left: 20%; animation-duration: 18s; }
-.floating-shape:nth-child(4) { background: radial-gradient(circle, #fad0c4, #ffd1ff); top: 80%; left: 70%; animation-duration: 20s; }
-.floating-shape:nth-child(5) { background: radial-gradient(circle, #ffecd2, #fcb69f); top: 40%; left: 80%; animation-duration: 22s; }
-.floating-shape:nth-child(6) { background: radial-gradient(circle, #d4fc79, #96e6a1); top: 70%; left: 40%; animation-duration: 24s; }
-.floating-shape:nth-child(7) { background: radial-gradient(circle, #84fab0, #8fd3f4); top: 20%; left: 75%; animation-duration: 26s; }
-.floating-shape:nth-child(8) { background: radial-gradient(circle, #cfd9df, #e2ebf0); top: 50%; left: 30%; animation-duration: 28s; }
-
+.floating-shape:nth-child(1) {
+  background: radial-gradient(circle, #ffafbd, #ffc3a0);
+  top: 10%;
+  left: 10%;
+  animation-duration: 14s;
+}
+.floating-shape:nth-child(2) {
+  background: radial-gradient(circle, #a1c4fd, #c2e9fb);
+  top: 30%;
+  left: 50%;
+  animation-duration: 16s;
+}
+.floating-shape:nth-child(3) {
+  background: radial-gradient(circle, #fbc2eb, #a6c1ee);
+  top: 60%;
+  left: 20%;
+  animation-duration: 18s;
+}
+.floating-shape:nth-child(4) {
+  background: radial-gradient(circle, #fad0c4, #ffd1ff);
+  top: 80%;
+  left: 70%;
+  animation-duration: 20s;
+}
+.floating-shape:nth-child(5) {
+  background: radial-gradient(circle, #ffecd2, #fcb69f);
+  top: 40%;
+  left: 80%;
+  animation-duration: 22s;
+}
+.floating-shape:nth-child(6) {
+  background: radial-gradient(circle, #d4fc79, #96e6a1);
+  top: 70%;
+  left: 40%;
+  animation-duration: 24s;
+}
+.floating-shape:nth-child(7) {
+  background: radial-gradient(circle, #84fab0, #8fd3f4);
+  top: 20%;
+  left: 75%;
+  animation-duration: 26s;
+}
+.floating-shape:nth-child(8) {
+  background: radial-gradient(circle, #cfd9df, #e2ebf0);
+  top: 50%;
+  left: 30%;
+  animation-duration: 28s;
+}
 
 @keyframes shapePulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.4); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
 }
 
 /* Floating animation */
 @keyframes floatShape {
-  0%   { transform: translate(0, 0) scale(1); opacity: 0.6; }
-  25%  { transform: translate(-40px, -50px) scale(1.4); opacity: 0.8; }
-  50%  { transform: translate(50px, -30px) scale(1.6); opacity: 1; }
-  75%  { transform: translate(-30px, 40px) scale(1.3); opacity: 0.7; }
-  100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translate(-40px, -50px) scale(1.4);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(50px, -30px) scale(1.6);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(-30px, 40px) scale(1.3);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
 }
 
-
-
 /* Contact Us End */
+
+/* Available Items Page - Scoped CSS */
+
+.available-items-page {
+  padding: 40px 20px;
+  background-color: #f0f4f8;
+}
+
+.available-items-page .available-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.available-items-page .available-header h2 {
+  font-size: 32px;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.available-items-page .available-search {
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+  display: flex;
+  gap: 12px;
+}
+
+.available-items-page .available-search input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.available-items-page .available-search button {
+  padding: 12px 20px;
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.available-items-page .available-search button:hover {
+  background-color: #1d4ed8;
+}
+
+.available-items-page .items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.available-items-page .item {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.available-items-page .item:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.available-items-page .item img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.available-items-page .item-body {
+  padding: 14px 16px;
+}
+
+.available-items-page .item-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.available-items-page .item-meta {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Available Items Page end */
+
+/* ========================================
+   REPORT LOST PAGE STYLES - SIMPLE WEBPAGE
+   ======================================== */
+
+/* Simple Hero Section */
+.lost-hero {
+  padding: 40px 0;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.lost-hero-inner {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.lost-hero h1 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  color: #1f2937;
+}
+
+.lost-hero p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Simple Form Section */
+.lost-form-section {
+  padding: 40px 0;
+  background: #ffffff;
+}
+
+.lost-form-card {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 30px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.lost-form-card h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  color: #1f2937;
+  text-align: left;
+}
+
+/* Simple Form Styles */
+.lost-form-card .floating-form {
+  display: block;
+}
+
+/* Override any floating form styles */
+.lost-form-card .floating-form .form-group {
+  position: relative;
+}
+
+.lost-form-card .floating-form .form-group label {
+  position: static !important;
+  transform: none !important;
+  top: auto !important;
+  left: auto !important;
+  background: none !important;
+  padding: 0 !important;
+  pointer-events: auto !important;
+  font-size: 14px !important;
+  color: #374151 !important;
+  margin-bottom: 5px !important;
+}
+
+.lost-form-card .form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.lost-form-card .form-group label {
+  display: block;
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.lost-form-card .form-group input,
+.lost-form-card .form-group select,
+.lost-form-card .form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #ffffff;
+  font-family: inherit;
+}
+
+.lost-form-card .form-group input:focus,
+.lost-form-card .form-group select:focus,
+.lost-form-card .form-group textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+/* File Input Styling */
+.lost-form-card .form-group input[type="file"] {
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+/* Select Dropdown Styling */
+.lost-form-card .form-group select {
+  cursor: pointer;
+}
+
+/* Textarea Styling */
+.lost-form-card .form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Simple Submit Button */
+.btn-animated {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: auto;
+}
+
+.btn-animated:hover {
+  background: #1d4ed8;
+}
+
+/* Simple Error and Success Messages */
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 10px 12px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.success-message {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+  padding: 10px 12px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+/* Image Preview */
+#preview-container {
+  margin-top: 5px;
+}
+
+#preview-container img {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .lost-hero h1 {
+    font-size: 24px;
+  }
+
+  .lost-form-card {
+    padding: 20px;
+    margin: 0 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lost-hero {
+    padding: 30px 0;
+  }
+
+  .lost-hero h1 {
+    font-size: 20px;
+  }
+
+  .lost-form-section {
+    padding: 30px 0;
+  }
+
+  .lost-form-card {
+    padding: 15px;
+    margin: 0 15px;
+  }
+}
+
+/* ========================================
+   REPORT LOST PAGE STYLES END
+   ======================================== */

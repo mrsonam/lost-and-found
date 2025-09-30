@@ -1,3 +1,35 @@
+<?php
+require_once 'config/database.php';
+
+// Get database connection
+$connection = getDBConnection();
+
+// Fetch recent items from database
+$recent_items = getAllRows($connection, "
+    SELECT 
+        i.id,
+        i.title,
+        i.description,
+        i.item_type,
+        i.location_lost,
+        i.location_found,
+        i.date_lost,
+        i.date_found,
+        i.created_at,
+        i.image_path,
+        c.name as category_name,
+        u.first_name,
+        u.last_name
+    FROM items i
+    LEFT JOIN categories c ON i.category_id = c.id
+    LEFT JOIN users u ON i.user_id = u.id
+    WHERE i.status = 'active'
+    ORDER BY i.created_at DESC
+    LIMIT 8
+");
+
+mysqli_close($connection);
+?>
 <!doctype html>
 <html lang="en">
 
@@ -31,8 +63,8 @@
       <div class="container">
         <div class="card search-quick-card">
           <h2 class="card-title">Quick Search</h2>
-          <form class="search-form" role="search" aria-label="Quick search">
-            <input type="search" placeholder="Search by keyword, brand, color..." aria-label="Keyword">
+          <form class="search-form" role="search" aria-label="Quick search" action="search.php" method="get">
+            <input type="search" name="q" placeholder="Search by keyword, brand, color..." aria-label="Keyword" value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>">
             <button class="btn btn-primary" type="submit">Search</button>
           </form>
         </div>
@@ -80,57 +112,52 @@
     <section class="recent-items">
       <div class="container recent-items-header">
         <h2 class="section-title">Recent Items</h2>
-        <a href="#" class="view-all">View All →</a>
+        <a href="search.php" class="view-all">View All →</a>
       </div>
       <div class="container">
         <div class="cards">
-          <!-- Card 1 -->
-          <article class="card item-card">
-            <img src="images/phone.jpg" alt="iPhone 14 Pro" class="item-card-img">
-            <div class="item-card-body">
-              <div class="item-card-title">iPhone 14 Pro</div>
-              <div class="item-card-meta">
-                <span class="badge badge-lost">Lost</span>
-              </div>
-              <div class="item-card-date">2 days ago</div>
-            </div>
-          </article>
+          <?php if (!empty($recent_items)): ?>
+            <?php foreach ($recent_items as $item): ?>
+              <article class="card item-card">
+                <?php
+                // Determine image source
+                $image_src = 'images/placeholder.jpg'; // Default placeholder
+                if (!empty($item['image_path']) && file_exists($item['image_path'])) {
+                  $image_src = $item['image_path'];
+                }
 
-          <!-- Card 2 -->
-          <article class="card item-card">
-            <img src="images/wallet.jpg" alt="Brown Leather Wallet" class="item-card-img">
-            <div class="item-card-body">
-              <div class="item-card-title">Brown Leather Wallet</div>
-              <div class="item-card-meta">
-                <span class="badge badge-found">Found</span>
-              </div>
-              <div class="item-card-date">3 hours ago</div>
+                // Format date
+                $date_created = new DateTime($item['created_at']);
+                $time_ago = $date_created->diff(new DateTime());
+                $time_text = '';
+                if ($time_ago->days > 0) {
+                  $time_text = $time_ago->days . ' day' . ($time_ago->days > 1 ? 's' : '') . ' ago';
+                } elseif ($time_ago->h > 0) {
+                  $time_text = $time_ago->h . ' hour' . ($time_ago->h > 1 ? 's' : '') . ' ago';
+                } else {
+                  $time_text = 'Just now';
+                }
+                ?>
+                <img src="<?php echo htmlspecialchars($image_src); ?>" alt="<?php echo htmlspecialchars($item['title']); ?>" class="item-card-img">
+                <div class="item-card-body">
+                  <div class="item-card-title"><?php echo htmlspecialchars($item['title']); ?></div>
+                  <div class="item-card-meta">
+                    <span class="badge badge-<?php echo $item['item_type'] === 'lost' ? 'lost' : 'found'; ?>">
+                      <?php echo ucfirst($item['item_type']); ?>
+                    </span>
+                    <?php if (!empty($item['category_name'])): ?>
+                      <span class="category"><?php echo htmlspecialchars($item['category_name']); ?></span>
+                    <?php endif; ?>
+                  </div>
+                  <div class="item-card-date"><?php echo $time_text; ?></div>
+                </div>
+              </article>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <div class="no-items">
+              <p>No items found. Be the first to <a href="report-lost.php">report a lost item</a> or <a href="report-found.php">report a found item</a>!</p>
             </div>
-          </article>
-
-          <!-- Card 3 -->
-          <article class="card item-card">
-            <img src="images/key.jpg" alt="Silver Car Key" class="item-card-img">
-            <div class="item-card-body">
-              <div class="item-card-title">Car Key</div>
-              <div class="item-card-meta">
-                <span class="badge badge-lost">Lost</span>
-              </div>
-              <div class="item-card-date">1 day ago</div>
-            </div>
-          </article>
-
-          <!-- Card 4 -->
-          <article class="card item-card">
-            <img src="images/bag.jpg" alt="Red Backpack" class="item-card-img">
-            <div class="item-card-body">
-              <div class="item-card-title">Red Backpack</div>
-              <div class="item-card-meta">
-                <span class="badge badge-found">Found</span>
-              </div>
-              <div class="item-card-date">7 days ago</div>
-            </div>
-          </article>
+          <?php endif; ?>
         </div>
       </div>
     </section>
