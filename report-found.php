@@ -1,68 +1,70 @@
 <?php
 session_start();
-require_once __DIR__ . '/config/database.php';
+require_once 'config/database.php';
+require_once 'includes/auth.php';
+
 // Redirect to login if not authenticated
 requireLogin();
 
 // Ensure database connection
 $conn = getDBConnection();
 if (!$conn) {
-    die("Database connection failed: " . mysqli_connect_error());
+  die("Database connection failed: " . mysqli_connect_error());
 }
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Collect form data
-    $title = mysqli_real_escape_string($conn, $_POST['item-name']);
-    $description = mysqli_real_escape_string($conn, $_POST['item-description']);
-    $location_found = mysqli_real_escape_string($conn, $_POST['item-location']);
-    $date_found = $_POST['found-date'];
-    $contact_name = mysqli_real_escape_string($conn, $_POST['contact-name']);
-    $contact_email = mysqli_real_escape_string($conn, $_POST['contact-email']);
-    $contact_phone = !empty($_POST['contact-phone']) ? mysqli_real_escape_string($conn, $_POST['contact-phone']) : null;
+  // Collect form data
+  $title = mysqli_real_escape_string($conn, $_POST['item-name']);
+  $description = mysqli_real_escape_string($conn, $_POST['item-description']);
+  $location_found = mysqli_real_escape_string($conn, $_POST['item-location']);
+  $date_found = $_POST['found-date'];
+  $contact_name = mysqli_real_escape_string($conn, $_POST['contact-name']);
+  $contact_email = mysqli_real_escape_string($conn, $_POST['contact-email']);
+  $contact_phone = !empty($_POST['contact-phone']) ? mysqli_real_escape_string($conn, $_POST['contact-phone']) : null;
 
-    // For demo: assume logged-in user (replace with real session user_id if login exists)
-    $user_id = $_SESSION['user_id'] ?? 1; 
+  // For demo: assume logged-in user (replace with real session user_id if login exists)
+  $user_id = $_SESSION['user_id'] ?? 1;
 
-    // Handle image upload
-    $image_path = null;
-    if (!empty($_FILES['item-image']['name'])) {
-        $upload_dir = "uploads/items/";
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
-        $file_name = time() . "_" . basename($_FILES['item-image']['name']);
-        $target_file = $upload_dir . $file_name;
-
-        if (move_uploaded_file($_FILES['item-image']['tmp_name'], $target_file)) {
-            $image_path = $target_file;
-        }
+  // Handle image upload
+  $image_path = null;
+  if (!empty($_FILES['item-image']['name'])) {
+    $upload_dir = "uploads/items/";
+    if (!is_dir($upload_dir)) {
+      mkdir($upload_dir, 0777, true);
     }
+    $file_name = time() . "_" . basename($_FILES['item-image']['name']);
+    $target_file = $upload_dir . $file_name;
 
-    // Insert into items table
-    $sql = "INSERT INTO items (user_id, category_id, title, description, item_type, location_found, date_found, contact_method, image_path) 
+    if (move_uploaded_file($_FILES['item-image']['tmp_name'], $target_file)) {
+      $image_path = $target_file;
+    }
+  }
+
+  // Insert into items table
+  $sql = "INSERT INTO items (user_id, category_id, title, description, item_type, location_found, date_found, contact_method, image_path) 
             VALUES (?, NULL, ?, ?, 'found', ?, ?, 'both', ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isssss", $user_id, $title, $description, $location_found, $date_found, $image_path);
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("isssss", $user_id, $title, $description, $location_found, $date_found, $image_path);
 
-    if ($stmt->execute()) {
-        $item_id = $stmt->insert_id;
+  if ($stmt->execute()) {
+    $item_id = $stmt->insert_id;
 
-        // Save into item_images table
-        if ($image_path) {
-            $sql_img = "INSERT INTO item_images (item_id, image_path, is_primary) VALUES (?, ?, TRUE)";
-            $stmt_img = $conn->prepare($sql_img);
-            $stmt_img->bind_param("is", $item_id, $image_path);
-            $stmt_img->execute();
-        }
-
-        echo "<p style='color:green;'>Item successfully reported!</p>";
-    } else {
-        echo "<p style='color:red;'>Error: " . $stmt->error . "</p>";
+    // Save into item_images table
+    if ($image_path) {
+      $sql_img = "INSERT INTO item_images (item_id, image_path, is_primary) VALUES (?, ?, TRUE)";
+      $stmt_img = $conn->prepare($sql_img);
+      $stmt_img->bind_param("is", $item_id, $image_path);
+      $stmt_img->execute();
     }
 
-    $stmt->close();
-    $conn->close();
+    echo "<p style='color:green;'>Item successfully reported!</p>";
+  } else {
+    echo "<p style='color:red;'>Error: " . $stmt->error . "</p>";
+  }
+
+  $stmt->close();
+  $conn->close();
 }
 ?>
 

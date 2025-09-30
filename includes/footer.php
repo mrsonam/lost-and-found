@@ -42,4 +42,3 @@ echo '
     <p>© 2025 Lost & Found. All rights reserved.</p>
   </div>
 </footer>';
-?>

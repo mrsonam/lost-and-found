@@ -20,7 +20,6 @@ if ($user) {
         <a class="' . ($current_page == 'report-lost.php' ? 'active' : '') . '" href="report-lost.php">Report Lost</a>
         <a class="' . ($current_page == 'report-found.php' ? 'active' : '') . '" href="report-found.php">Report Found</a>
         <a class="' . ($current_page == 'search.php' ? 'active' : '') . '" href="search.php">Search</a>';
-        
 }
 
 echo '
