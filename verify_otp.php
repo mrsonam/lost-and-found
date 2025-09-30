@@ -33,11 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Verify OTP - Lost & Found</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
     <?php include 'includes/navbar.php'; ?>
     <main>
@@ -59,4 +61,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
     <?php include 'includes/footer.php'; ?>
 </body>
+
 </html>

@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once __DIR__ . '/config/database.php';
+// Redirect to login if not authenticated
+requireLogin();
 
 // Ensure database connection
 $conn = getDBConnection();

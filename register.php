@@ -98,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Correct redirect path
                     header("Location: /lost-and-found/verify_otp.php");
                     exit();
-
                 } catch (Exception $e) {
                     $error_message = "Could not send OTP email. Mailer Error: {$mail->ErrorInfo}";
                 }
@@ -112,12 +111,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Register - Lost & Found</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
     <?php include 'includes/navbar.php'; ?>
     <main>
@@ -164,4 +165,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
     <?php include 'includes/footer.php'; ?>
 </body>
+
 </html>

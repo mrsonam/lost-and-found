@@ -1,6 +1,8 @@
 <?php 
 session_start();
 include 'config.php'; 
+// Redirect to login if not authenticated
+requireLogin();
 ?>
 <!doctype html>
 <html lang="en">
