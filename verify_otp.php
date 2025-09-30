@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Session expired. Please register again.";
     } else {
         $connection = getDBConnection();
-        $user = getSingleRow($connection, "SELECT id, otp_code, otp_expires FROM users WHERE email = ?", "s", [$email]);
+        $user = getSingleRow($connection, "SELECT id, email, first_name, last_name, otp_code, otp_expires FROM users WHERE email = ?", "s", [$email]);
 
         if (!$user) {
             $error_message = "User not found. Please register again.";
@@ -21,13 +21,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($user['otp_code'] === $entered_otp && strtotime($user['otp_expires']) > time()) {
             // OTP correct → clear OTP and mark user verified
             executeQuery($connection, "UPDATE users SET otp_code = NULL, otp_expires = NULL WHERE email = ?", "s", [$email]);
+
+            // Store user info in session (following login logic)
             $_SESSION['user_id'] = $user['id'];
-            unset($_SESSION['pending_email']);
-            header("Location: index.php");
-            exit;
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['first_name'] = $user['first_name'];
+            $_SESSION['last_name'] = $user['last_name'];
+
+            // Create session token for security (following login logic)
+            $session_token = bin2hex(random_bytes(32));
+            $expires_at = date('Y-m-d H:i:s', strtotime('+7 days'));
+
+            // Save session to database
+            $result = executeQuery($connection, "INSERT INTO user_sessions (user_id, session_token, expires_at) VALUES (?, ?, ?)", "iss", [$user['id'], $session_token, $expires_at]);
+
+            if (!$result) {
+                error_log("OTP Verification Error - Failed to insert session token for user ID: " . $user['id'] . " at " . date('Y-m-d H:i:s'));
+                error_log("OTP Verification Error - Database error: " . mysqli_error($connection));
+                $error_message = 'Verification failed. Please try again.';
+            } else {
+                $_SESSION['session_token'] = $session_token;
+                error_log("OTP Verification Success - User ID: " . $user['id'] . " verified and logged in successfully at " . date('Y-m-d H:i:s'));
+
+                unset($_SESSION['pending_email']);
+                header("Location: index.php");
+                exit;
+            }
         } else {
+            error_log("OTP Verification Failed - Invalid or expired OTP for email: " . $email . " at " . date('Y-m-d H:i:s'));
             $error_message = "Invalid or expired OTP.";
         }
+
+        mysqli_close($connection);
     }
 }
 ?>
