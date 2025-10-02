@@ -10,7 +10,8 @@ require 'PHPMailer/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-$error_message = '';
+$error_messages = [];
+$field_errors = [];
 $success_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -22,23 +23,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $last_name = trim($_POST['last_name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
 
-    // Step 2 — Validate form data
-    if (empty($email) || empty($password) || empty($first_name) || empty($last_name)) {
-        $error_message = 'Please fill in all required fields.';
-    } elseif ($password !== $confirm_password) {
-        $error_message = 'Passwords do not match.';
-    } elseif (strlen($password) < 6) {
-        $error_message = 'Password must be at least 6 characters long.';
+    // Step 2 — Validate form data with field-specific errors
+    if (empty($email)) {
+        $field_errors['email'] = 'Email is required.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error_message = 'Please enter a valid email address.';
-    } else {
+        $field_errors['email'] = 'Please enter a valid email address.';
+    }
+
+    if (empty($first_name)) {
+        $field_errors['first_name'] = 'First name is required.';
+    }
+
+    if (empty($last_name)) {
+        $field_errors['last_name'] = 'Last name is required.';
+    }
+
+    if (empty($password)) {
+        $field_errors['password'] = 'Password is required.';
+    } elseif (strlen($password) < 6) {
+        $field_errors['password'] = 'Password must be at least 6 characters long.';
+    }
+
+    if (empty($confirm_password)) {
+        $field_errors['confirm_password'] = 'Please confirm your password.';
+    } elseif ($password !== $confirm_password) {
+        $field_errors['confirm_password'] = 'Passwords do not match.';
+    }
+
+    // Only proceed if no field errors
+    if (empty($field_errors)) {
         $connection = getDBConnection();
 
         // Step 3 — Check if email exists
         $existing_user = getSingleRow($connection, "SELECT id FROM users WHERE email = ?", "s", [$email]);
 
         if ($existing_user) {
-            $error_message = 'Email already exists.';
+            $field_errors['email'] = 'An account with this email already exists.';
         } else {
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
@@ -99,10 +119,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header("Location: /lost-and-found/verify_otp.php");
                     exit();
                 } catch (Exception $e) {
-                    $error_message = "Could not send OTP email. Mailer Error: {$mail->ErrorInfo}";
+                    $error_messages[] = "Could not send OTP email. Mailer Error: {$mail->ErrorInfo}";
                 }
             } else {
-                $error_message = 'Registration failed. Please try again.';
+                $error_messages[] = 'Registration failed. Please try again.';
             }
         }
         mysqli_close($connection);
@@ -127,34 +147,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h1>Create Account</h1>
                 <p>Join our community to report lost and found items</p>
 
-                <?php if ($error_message): ?>
-                    <div class="error-message"><?php echo htmlspecialchars($error_message); ?></div>
+                <?php if (!empty($error_messages)): ?>
+                    <div class="error-messages">
+                        <?php foreach ($error_messages as $error): ?>
+                            <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
+                        <?php endforeach; ?>
+                    </div>
                 <?php endif; ?>
 
-                <form method="POST">
-                    <div class="form-group">
+                <form method="POST" novalidate>
+                    <div class="form-group <?php echo isset($field_errors['email']) ? 'has-error' : ''; ?>">
                         <label>Email Address *</label>
-                        <input type="email" name="email" value="<?php echo htmlspecialchars($email ?? ''); ?>" required>
+                        <input type="email" name="email"
+                            class="<?php echo isset($field_errors['email']) ? 'field-error' : ''; ?>"
+                            value="<?php echo htmlspecialchars($email ?? ''); ?>">
+                        <?php if (isset($field_errors['email'])): ?>
+                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['email']); ?></span>
+                        <?php endif; ?>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group <?php echo isset($field_errors['first_name']) ? 'has-error' : ''; ?>">
                         <label>First Name *</label>
-                        <input type="text" name="first_name" value="<?php echo htmlspecialchars($first_name ?? ''); ?>" required>
+                        <input type="text" name="first_name"
+                            class="<?php echo isset($field_errors['first_name']) ? 'field-error' : ''; ?>"
+                            value="<?php echo htmlspecialchars($first_name ?? ''); ?>">
+                        <?php if (isset($field_errors['first_name'])): ?>
+                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['first_name']); ?></span>
+                        <?php endif; ?>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group <?php echo isset($field_errors['last_name']) ? 'has-error' : ''; ?>">
                         <label>Last Name *</label>
-                        <input type="text" name="last_name" value="<?php echo htmlspecialchars($last_name ?? ''); ?>" required>
+                        <input type="text" name="last_name"
+                            class="<?php echo isset($field_errors['last_name']) ? 'field-error' : ''; ?>"
+                            value="<?php echo htmlspecialchars($last_name ?? ''); ?>">
+                        <?php if (isset($field_errors['last_name'])): ?>
+                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['last_name']); ?></span>
+                        <?php endif; ?>
                     </div>
                     <div class="form-group">
                         <label>Phone Number</label>
                         <input type="tel" name="phone" value="<?php echo htmlspecialchars($phone ?? ''); ?>">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group <?php echo isset($field_errors['password']) ? 'has-error' : ''; ?>">
                         <label>Password *</label>
-                        <input type="password" name="password" required>
+                        <input type="password" name="password"
+                            class="<?php echo isset($field_errors['password']) ? 'field-error' : ''; ?>" required>
+                        <?php if (isset($field_errors['password'])): ?>
+                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['password']); ?></span>
+                        <?php endif; ?>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group <?php echo isset($field_errors['confirm_password']) ? 'has-error' : ''; ?>">
                         <label>Confirm Password *</label>
-                        <input type="password" name="confirm_password" required>
+                        <input type="password" name="confirm_password"
+                            class="<?php echo isset($field_errors['confirm_password']) ? 'field-error' : ''; ?>" required>
+                        <?php if (isset($field_errors['confirm_password'])): ?>
+                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['confirm_password']); ?></span>
+                        <?php endif; ?>
                     </div>
                     <button type="submit" class="btn btn-primary">Create Account</button>
                 </form>

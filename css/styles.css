@@ -1491,5 +1491,49 @@ mark.item-highlight {
     font-size: 2rem;
   }
 } /* ========================================
+   FIELD-SPECIFIC ERROR STYLES
+   ======================================== */
+
+/* Field-specific error highlighting */
+.field-error {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+  background-color: #fef2f2 !important;
+}
+
+.field-error:focus {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3) !important;
+}
+
+/* Field-specific error messages */
+.field-error-message {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+  font-weight: 500;
+}
+
+/* Form group with error */
+.form-group.has-error label {
+  color: #dc2626 !important;
+}
+
+/* Error message container */
+.error-messages {
+  margin-bottom: 15px;
+}
+
+.error-messages .field-error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* ========================================
    SEARCH PAGE STYLES END
    ======================================== */

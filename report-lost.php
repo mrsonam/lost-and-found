@@ -6,7 +6,8 @@ require_once 'includes/auth.php';
 // Redirect to login if not authenticated
 requireLogin();
 
-$error_message = '';
+$error_messages = [];
+$field_errors = [];
 $success_message = '';
 $categories = [];
 
@@ -29,10 +30,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date_lost = $_POST['date_lost'] ?? '';
     $contact_method = $_POST['contact_method'] ?? 'both';
 
-    // Validate required fields
-    if (empty($title) || empty($description) || empty($category_id) || empty($location_lost) || empty($date_lost)) {
-        $error_message = 'Please fill in all required fields.';
-    } else {
+    // Validate required fields with field-specific errors
+    if (empty($title)) {
+        $field_errors['title'] = 'Item title is required.';
+    }
+
+    if (empty($description)) {
+        $field_errors['description'] = 'Description is required.';
+    }
+
+    if (empty($category_id)) {
+        $field_errors['category_id'] = 'Please select a category.';
+    }
+
+    if (empty($location_lost)) {
+        $field_errors['location_lost'] = 'Location where you lost the item is required.';
+    }
+
+    if (empty($date_lost)) {
+        $field_errors['date_lost'] = 'Date when you lost the item is required.';
+    } elseif ($date_lost > date('Y-m-d')) {
+        $field_errors['date_lost'] = 'Date cannot be in the future.';
+    }
+
+    // Only proceed if no field errors
+    if (empty($field_errors)) {
         // Handle file upload
         $image_path = '';
         if (isset($_FILES['item_image']) && $_FILES['item_image']['error'] === UPLOAD_ERR_OK) {
@@ -51,10 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (move_uploaded_file($_FILES['item_image']['tmp_name'], $upload_path)) {
                     $image_path = $upload_path;
                 } else {
-                    $error_message = 'Failed to upload image. Please try again.';
+                    $field_errors['item_image'] = 'Failed to upload image. Please try again.';
                 }
             } else {
-                $error_message = 'Invalid file type. Please upload JPG, PNG, GIF, or WebP images only.';
+                $field_errors['item_image'] = 'Invalid file type. Please upload JPG, PNG, GIF, or WebP images only.';
             }
         } else {
             // Debug upload errors
@@ -62,35 +84,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $upload_error = $_FILES['item_image']['error'];
                 switch ($upload_error) {
                     case UPLOAD_ERR_INI_SIZE:
-                        $error_message = 'File too large (server limit).';
+                        $field_errors['item_image'] = 'File too large (server limit).';
                         break;
                     case UPLOAD_ERR_FORM_SIZE:
-                        $error_message = 'File too large (form limit).';
+                        $field_errors['item_image'] = 'File too large (form limit).';
                         break;
                     case UPLOAD_ERR_PARTIAL:
-                        $error_message = 'File upload was interrupted.';
+                        $field_errors['item_image'] = 'File upload was interrupted.';
                         break;
                     case UPLOAD_ERR_NO_FILE:
                         // No file uploaded - this is normal for optional uploads
                         break;
                     case UPLOAD_ERR_NO_TMP_DIR:
-                        $error_message = 'No temporary directory available.';
+                        $field_errors['item_image'] = 'No temporary directory available.';
                         break;
                     case UPLOAD_ERR_CANT_WRITE:
-                        $error_message = 'Cannot write to disk.';
+                        $field_errors['item_image'] = 'Cannot write to disk.';
                         break;
                     case UPLOAD_ERR_EXTENSION:
-                        $error_message = 'Upload blocked by extension.';
+                        $field_errors['item_image'] = 'Upload blocked by extension.';
                         break;
                     default:
-                        $error_message = 'Unknown upload error: ' . $upload_error;
+                        $field_errors['item_image'] = 'Unknown upload error: ' . $upload_error;
                         break;
                 }
             }
         }
 
         // Insert item into database if no errors
-        if (empty($error_message)) {
+        if (empty($field_errors)) {
             $result = executeQuery(
                 $connection,
                 "INSERT INTO items (user_id, category_id, title, description, item_type, location_lost, date_lost, contact_method, image_path) VALUES (?, ?, ?, ?, 'lost', ?, ?, ?, ?)",
@@ -121,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 error_log("Lost Item Report Failed - Database error for user ID: " . $user['id'] . " at " . date('Y-m-d H:i:s'));
                 error_log("Lost Item Report Failed - Database error: " . mysqli_error($connection));
-                $error_message = 'Failed to report lost item. Please try again.';
+                $error_messages[] = 'Failed to report lost item. Please try again.';
             }
         }
     }
@@ -158,25 +180,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="lost-form-card fade-in-up">
                     <h2>Lost Item Details</h2>
 
-                    <?php if ($error_message): ?>
-                        <div class="error-message"><?php echo htmlspecialchars($error_message); ?></div>
+                    <?php if (!empty($error_messages)): ?>
+                        <div class="error-messages">
+                            <?php foreach ($error_messages as $error): ?>
+                                <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
+                            <?php endforeach; ?>
+                        </div>
                     <?php endif; ?>
 
                     <?php if ($success_message): ?>
                         <div class="success-message"><?php echo htmlspecialchars($success_message); ?></div>
                     <?php endif; ?>
 
-                    <form action="" method="post" enctype="multipart/form-data" class="floating-form">
+                    <form action="" method="post" enctype="multipart/form-data" class="floating-form" novalidate>
                         <!-- Item Title -->
-                        <div class="form-group">
+                        <div class="form-group <?php echo isset($field_errors['title']) ? 'has-error' : ''; ?>">
                             <label for="title">Item Title *</label>
-                            <input type="text" id="title" name="title" required value="<?php echo htmlspecialchars($title ?? ''); ?>">
+                            <input type="text" id="title" name="title"
+                                class="<?php echo isset($field_errors['title']) ? 'field-error' : ''; ?>"
+                                value="<?php echo htmlspecialchars($title ?? ''); ?>">
+                            <?php if (isset($field_errors['title'])): ?>
+                                <span class="field-error-message"><?php echo htmlspecialchars($field_errors['title']); ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Category -->
-                        <div class="form-group">
+                        <div class="form-group <?php echo isset($field_errors['category_id']) ? 'has-error' : ''; ?>">
                             <label for="category_id">Category *</label>
-                            <select id="category_id" name="category_id" required>
+                            <select id="category_id" name="category_id"
+                                class="<?php echo isset($field_errors['category_id']) ? 'field-error' : ''; ?>">
                                 <option value="">Select Category *</option>
                                 <?php foreach ($categories as $category): ?>
                                     <option value="<?php echo $category['id']; ?>" <?php echo (isset($category_id) && $category_id == $category['id']) ? 'selected' : ''; ?>>
@@ -184,24 +216,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <?php if (isset($field_errors['category_id'])): ?>
+                                <span class="field-error-message"><?php echo htmlspecialchars($field_errors['category_id']); ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Description -->
-                        <div class="form-group">
+                        <div class="form-group <?php echo isset($field_errors['description']) ? 'has-error' : ''; ?>">
                             <label for="description">Description *</label>
-                            <textarea id="description" name="description" required rows="4"><?php echo htmlspecialchars($description ?? ''); ?></textarea>
+                            <textarea id="description" name="description" rows="4"
+                                class="<?php echo isset($field_errors['description']) ? 'field-error' : ''; ?>"><?php echo htmlspecialchars($description ?? ''); ?></textarea>
+                            <?php if (isset($field_errors['description'])): ?>
+                                <span class="field-error-message"><?php echo htmlspecialchars($field_errors['description']); ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Location Lost -->
-                        <div class="form-group">
+                        <div class="form-group <?php echo isset($field_errors['location_lost']) ? 'has-error' : ''; ?>">
                             <label for="location_lost">Where did you lose it? *</label>
-                            <input type="text" id="location_lost" name="location_lost" required value="<?php echo htmlspecialchars($location_lost ?? ''); ?>">
+                            <input type="text" id="location_lost" name="location_lost"
+                                class="<?php echo isset($field_errors['location_lost']) ? 'field-error' : ''; ?>"
+                                value="<?php echo htmlspecialchars($location_lost ?? ''); ?>">
+                            <?php if (isset($field_errors['location_lost'])): ?>
+                                <span class="field-error-message"><?php echo htmlspecialchars($field_errors['location_lost']); ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Date Lost -->
-                        <div class="form-group">
+                        <div class="form-group <?php echo isset($field_errors['date_lost']) ? 'has-error' : ''; ?>">
                             <label for="date_lost">When did you lose it? *</label>
-                            <input type="date" id="date_lost" name="date_lost" required value="<?php echo htmlspecialchars($date_lost ?? ''); ?>">
+                            <input type="date" id="date_lost" name="date_lost"
+                                class="<?php echo isset($field_errors['date_lost']) ? 'field-error' : ''; ?>"
+                                value="<?php echo htmlspecialchars($date_lost ?? ''); ?>">
+                            <?php if (isset($field_errors['date_lost'])): ?>
+                                <span class="field-error-message"><?php echo htmlspecialchars($field_errors['date_lost']); ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Contact Method -->
@@ -215,9 +264,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <!-- Upload Image -->
-                        <div class="form-group">
+                        <div class="form-group <?php echo isset($field_errors['item_image']) ? 'has-error' : ''; ?>">
                             <label for="item_image">Upload Image (Optional)</label>
-                            <input type="file" id="item_image" name="item_image" accept="image/*">
+                            <input type="file" id="item_image" name="item_image" accept="image/*"
+                                class="<?php echo isset($field_errors['item_image']) ? 'field-error' : ''; ?>">
+                            <?php if (isset($field_errors['item_image'])): ?>
+                                <span class="field-error-message"><?php echo htmlspecialchars($field_errors['item_image']); ?></span>
+                            <?php endif; ?>
                             <div id="preview-container"></div>
                         </div>
 
