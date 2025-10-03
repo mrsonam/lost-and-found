@@ -1,6 +1,10 @@
 <?php
 session_start();
 require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/includes/auth.php';
+
+// Redirect to login if not authenticated
+requireLogin();
 
 $showSuccess = false; // flag to trigger popup
 
@@ -17,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $date_found = $_POST['found-date'];
     $category_id = intval($_POST['category']); 
     $contact_method = $_POST['contact_method'];
-    $user_id = $_SESSION['user_id'] ?? 1;
+    $user_id = $_SESSION['user_id']; // user must be logged in now
 
     $image_path = null;
     if (!empty($_FILES['item-image']['name'])) {
