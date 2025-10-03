@@ -2,23 +2,25 @@
 // Include database config
 require_once "config.php";
 
+$showSuccess = false; // flag to trigger popup
+
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $name    = $conn->real_escape_string($_POST['name']);
-  $email   = $conn->real_escape_string($_POST['email']);
-  $phone = $conn->real_escape_string($_POST['phone']);
-  $subject = $conn->real_escape_string($_POST['subject']);
-  $message = $conn->real_escape_string($_POST['message']);
+    $name    = $conn->real_escape_string($_POST['name']);
+    $email   = $conn->real_escape_string($_POST['email']);
+    $phone   = $conn->real_escape_string($_POST['phone']);
+    $subject = $conn->real_escape_string($_POST['subject']);
+    $message = $conn->real_escape_string($_POST['message']);
 
-  // Insert query
-  $sql = "INSERT INTO contact (name, email, phone, subject, message)
+    // Insert query
+    $sql = "INSERT INTO contact (name, email, phone, subject, message)
             VALUES ('$name', '$email', '$phone', '$subject', '$message')";
 
-  if ($conn->query($sql) === TRUE) {
-    echo "Message sent successfully!";
-  } else {
-    echo "Error: " . $conn->error;
-  }
+    if ($conn->query($sql) === TRUE) {
+        $showSuccess = true; // trigger popup
+    } else {
+        echo "Error: " . $conn->error;
+    }
 }
 
 $conn->close();
@@ -32,10 +34,39 @@ $conn->close();
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Contact Us - Lost & Found</title>
   <link rel="stylesheet" href="css/styles.css"> <!-- global styles -->
+
+  <style>
+    .popup-message {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #16a34a;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        font-weight: bold;
+        z-index: 9999;
+        animation: fadeInOut 3s forwards;
+    }
+
+    @keyframes fadeInOut {
+      0% {opacity: 0; transform: translateY(-20px);}
+      10% {opacity: 1; transform: translateY(0);}
+      90% {opacity: 1;}
+      100% {opacity: 0; transform: translateY(-20px);}
+    }
+  </style>
 </head>
 
 <body>
   <?php include 'includes/navbar.php'; ?>
+
+  <!-- Success Popup -->
+  <div id="success-popup" class="popup-message">
+    Message sent successfully!
+  </div>
 
   <main>
     <!-- Hero -->
@@ -55,7 +86,6 @@ $conn->close();
         <span class="floating-shape shape-diamond"></span>
       </div>
     </section>
-
 
     <!-- Contact Info Cards -->
     <section class="contact-info-grid">
@@ -116,14 +146,25 @@ $conn->close();
         <h2>Find Us</h2>
         <div class="map-wrapper">
           <iframe class="map-frame"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2820.3609062566065!2d149.12519157531958!3d-35.27618419332263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b164d0022e8ae85%3A0x8fbc2978e5330668!2sWentworth%20Institute%20of%20Higher%20Education!5e1!3m2!1sen!2sau!4v1757641786471!5m2!1sen!2sau" width="600" height="450" style="border:0;" allowfullscreen="Yes" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-            ></iframe>
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2820.3609062566065!2d149.12519157531958!3d-35.27618419332263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b164d0022e8ae85%3A0x8fbc2978e5330668!2sWentworth%20Institute%20of%20Higher%20Education!5e1!3m2!1sen!2sau!4v1757641786471!5m2!1sen!2sau" 
+            width="600" height="450" style="border:0;" allowfullscreen="Yes" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       </div>
     </section>
   </main>
 
   <?php include 'includes/footer.php'; ?>
-</body>
 
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    <?php if ($showSuccess): ?>
+      let popup = document.getElementById("success-popup");
+      popup.style.display = "block";
+      setTimeout(() => {
+          popup.style.display = "none";
+      }, 3000);
+    <?php endif; ?>
+  });
+  </script>
+</body>
 </html>
