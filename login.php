@@ -110,21 +110,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 <?php endif; ?>
 
-                <form method="POST" action="">
+                <form method="POST" action="" class="floating-form" novalidate>
                     <div class="form-group <?php echo isset($field_errors['email']) ? 'has-error' : ''; ?>">
-                        <label for="email">Email Address</label>
-                        <input id="email" name="email"
+                        <input id="email" name="email" required placeholder=" "
                             class="<?php echo isset($field_errors['email']) ? 'field-error' : ''; ?>"
                             value="<?php echo htmlspecialchars($email ?? ''); ?>">
+                        <label for="email">Email Address</label>
                         <?php if (isset($field_errors['email'])): ?>
                             <span class="field-error-message"><?php echo htmlspecialchars($field_errors['email']); ?></span>
                         <?php endif; ?>
                     </div>
 
                     <div class="form-group <?php echo isset($field_errors['password']) ? 'has-error' : ''; ?>">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password"
+                        <input type="password" id="password" name="password" required placeholder=" "
                             class="<?php echo isset($field_errors['password']) ? 'field-error' : ''; ?>">
+                        <label for="password">Password</label>
                         <?php if (isset($field_errors['password'])): ?>
                             <span class="field-error-message"><?php echo htmlspecialchars($field_errors['password']); ?></span>
                         <?php endif; ?>

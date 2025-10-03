@@ -121,7 +121,7 @@ mysqli_close($connection);
               <article class="card item-card">
                 <?php
                 // Determine image source
-                $image_src = 'images/placeholder.jpg'; // Default placeholder
+                $image_src = 'images/placeholder.png'; // Default placeholder
                 if (!empty($item['image_path']) && file_exists($item['image_path'])) {
                   $image_src = $item['image_path'];
                 }

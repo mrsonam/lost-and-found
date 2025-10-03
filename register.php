@@ -155,50 +155,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 <?php endif; ?>
 
-                <form method="POST" novalidate>
+                <form method="POST" novalidate class="floating-form">
                     <div class="form-group <?php echo isset($field_errors['email']) ? 'has-error' : ''; ?>">
-                        <label>Email Address *</label>
-                        <input type="email" name="email"
+                        <input type="email" name="email" required placeholder=" "
                             class="<?php echo isset($field_errors['email']) ? 'field-error' : ''; ?>"
                             value="<?php echo htmlspecialchars($email ?? ''); ?>">
+                        <label>Email Address *</label>
                         <?php if (isset($field_errors['email'])): ?>
                             <span class="field-error-message"><?php echo htmlspecialchars($field_errors['email']); ?></span>
                         <?php endif; ?>
                     </div>
                     <div class="form-group <?php echo isset($field_errors['first_name']) ? 'has-error' : ''; ?>">
-                        <label>First Name *</label>
-                        <input type="text" name="first_name"
+                        <input type="text" name="first_name" required placeholder=" "
                             class="<?php echo isset($field_errors['first_name']) ? 'field-error' : ''; ?>"
                             value="<?php echo htmlspecialchars($first_name ?? ''); ?>">
+                        <label>First Name *</label>
                         <?php if (isset($field_errors['first_name'])): ?>
                             <span class="field-error-message"><?php echo htmlspecialchars($field_errors['first_name']); ?></span>
                         <?php endif; ?>
                     </div>
                     <div class="form-group <?php echo isset($field_errors['last_name']) ? 'has-error' : ''; ?>">
-                        <label>Last Name *</label>
-                        <input type="text" name="last_name"
+                        <input type="text" name="last_name" required placeholder=" "
                             class="<?php echo isset($field_errors['last_name']) ? 'field-error' : ''; ?>"
                             value="<?php echo htmlspecialchars($last_name ?? ''); ?>">
+                        <label>Last Name *</label>
                         <?php if (isset($field_errors['last_name'])): ?>
                             <span class="field-error-message"><?php echo htmlspecialchars($field_errors['last_name']); ?></span>
                         <?php endif; ?>
                     </div>
                     <div class="form-group">
+                        <input type="tel" name="phone" placeholder=" " value="<?php echo htmlspecialchars($phone ?? ''); ?>">
                         <label>Phone Number</label>
-                        <input type="tel" name="phone" value="<?php echo htmlspecialchars($phone ?? ''); ?>">
                     </div>
                     <div class="form-group <?php echo isset($field_errors['password']) ? 'has-error' : ''; ?>">
+                        <input type="password" name="password" required placeholder=" "
+                            class="<?php echo isset($field_errors['password']) ? 'field-error' : ''; ?>">
                         <label>Password *</label>
-                        <input type="password" name="password"
-                            class="<?php echo isset($field_errors['password']) ? 'field-error' : ''; ?>" required>
                         <?php if (isset($field_errors['password'])): ?>
                             <span class="field-error-message"><?php echo htmlspecialchars($field_errors['password']); ?></span>
                         <?php endif; ?>
                     </div>
                     <div class="form-group <?php echo isset($field_errors['confirm_password']) ? 'has-error' : ''; ?>">
+                        <input type="password" name="confirm_password" required placeholder=" "
+                            class="<?php echo isset($field_errors['confirm_password']) ? 'field-error' : ''; ?>">
                         <label>Confirm Password *</label>
-                        <input type="password" name="confirm_password"
-                            class="<?php echo isset($field_errors['confirm_password']) ? 'field-error' : ''; ?>" required>
                         <?php if (isset($field_errors['confirm_password'])): ?>
                             <span class="field-error-message"><?php echo htmlspecialchars($field_errors['confirm_password']); ?></span>
                         <?php endif; ?>

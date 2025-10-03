@@ -58,7 +58,7 @@ requireLogin();
           echo '<script>window.totalItems = ' . $totalItems . ';</script>';
 
           while ($row = $result->fetch_assoc()) {
-            $image_path = !empty($row['image_path']) ? $row['image_path'] : 'images/placeholder.jpg';
+            $image_path = !empty($row['image_path']) ? $row['image_path'] : 'images/placeholder.png';
             $item_title = htmlspecialchars($row['title'] ?? '');
             $item_location = htmlspecialchars($row['location_found'] ?? '');
             $item_description = htmlspecialchars($row['description'] ?? '');

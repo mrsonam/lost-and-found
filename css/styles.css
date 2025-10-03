@@ -534,6 +534,14 @@ body {
   color: #2563eb;
 }
 
+/* Float label for selects when valid (required + non-empty selection) */
+.floating-form select:valid + label {
+  top: -10px;
+  left: 10px;
+  font-size: 13px;
+  color: #2563eb;
+}
+
 /* Focus underline animation */
 .floating-form input:focus,
 .floating-form textarea:focus,
@@ -1042,17 +1050,18 @@ body {
   position: relative;
 }
 
+/* Remove overrides so floating labels animate consistently across forms */
 .lost-form-card .floating-form .form-group label {
-  position: static !important;
-  transform: none !important;
-  top: auto !important;
-  left: auto !important;
-  background: none !important;
-  padding: 0 !important;
-  pointer-events: auto !important;
-  font-size: 14px !important;
-  color: #374151 !important;
-  margin-bottom: 5px !important;
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  background: #fff;
+  padding: 0 6px;
+  color: #888;
+  font-size: 16px;
+  pointer-events: none;
+  transition: all 0.3s ease;
 }
 
 .lost-form-card .form-group {
@@ -1518,6 +1527,23 @@ mark.item-highlight {
 /* Form group with error */
 .form-group.has-error label {
   color: #dc2626 !important;
+}
+
+/* Keep labels floated when a field has an error (even if empty) */
+.floating-form .form-group.has-error label,
+.floating-form input.field-error + label,
+.floating-form textarea.field-error + label,
+.floating-form select.field-error + label {
+  top: -9px !important;
+  left: 10px !important;
+  font-size: 13px !important;
+}
+
+/* Float label on autofill */
+.floating-form input:-webkit-autofill + label {
+  top: -10px;
+  left: 10px;
+  font-size: 13px;
 }
 
 /* Error message container */

@@ -195,10 +195,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <form action="" method="post" enctype="multipart/form-data" class="floating-form" novalidate>
                         <!-- Item Title -->
                         <div class="form-group <?php echo isset($field_errors['title']) ? 'has-error' : ''; ?>">
-                            <label for="title">Item Title *</label>
-                            <input type="text" id="title" name="title"
+                            <input type="text" id="title" name="title" required placeholder=" "
                                 class="<?php echo isset($field_errors['title']) ? 'field-error' : ''; ?>"
                                 value="<?php echo htmlspecialchars($title ?? ''); ?>">
+                            <label for="title">Item Title *</label>
                             <?php if (isset($field_errors['title'])): ?>
                                 <span class="field-error-message"><?php echo htmlspecialchars($field_errors['title']); ?></span>
                             <?php endif; ?>
@@ -206,8 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <!-- Category -->
                         <div class="form-group <?php echo isset($field_errors['category_id']) ? 'has-error' : ''; ?>">
-                            <label for="category_id">Category *</label>
-                            <select id="category_id" name="category_id"
+                            <select id="category_id" name="category_id" required placeholder=" "
                                 class="<?php echo isset($field_errors['category_id']) ? 'field-error' : ''; ?>">
                                 <option value="">Select Category *</option>
                                 <?php foreach ($categories as $category): ?>
@@ -216,6 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <label for="category_id">Category *</label>
                             <?php if (isset($field_errors['category_id'])): ?>
                                 <span class="field-error-message"><?php echo htmlspecialchars($field_errors['category_id']); ?></span>
                             <?php endif; ?>
@@ -223,9 +223,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <!-- Description -->
                         <div class="form-group <?php echo isset($field_errors['description']) ? 'has-error' : ''; ?>">
-                            <label for="description">Description *</label>
-                            <textarea id="description" name="description" rows="4"
+                            <textarea id="description" name="description" rows="4" required placeholder=" "
                                 class="<?php echo isset($field_errors['description']) ? 'field-error' : ''; ?>"><?php echo htmlspecialchars($description ?? ''); ?></textarea>
+                            <label for="description">Description *</label>
                             <?php if (isset($field_errors['description'])): ?>
                                 <span class="field-error-message"><?php echo htmlspecialchars($field_errors['description']); ?></span>
                             <?php endif; ?>
@@ -233,10 +233,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <!-- Location Lost -->
                         <div class="form-group <?php echo isset($field_errors['location_lost']) ? 'has-error' : ''; ?>">
-                            <label for="location_lost">Where did you lose it? *</label>
-                            <input type="text" id="location_lost" name="location_lost"
+                            <input type="text" id="location_lost" name="location_lost" required placeholder=" "
                                 class="<?php echo isset($field_errors['location_lost']) ? 'field-error' : ''; ?>"
                                 value="<?php echo htmlspecialchars($location_lost ?? ''); ?>">
+                            <label for="location_lost">Where did you lose it? *</label>
                             <?php if (isset($field_errors['location_lost'])): ?>
                                 <span class="field-error-message"><?php echo htmlspecialchars($field_errors['location_lost']); ?></span>
                             <?php endif; ?>
@@ -244,10 +244,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <!-- Date Lost -->
                         <div class="form-group <?php echo isset($field_errors['date_lost']) ? 'has-error' : ''; ?>">
-                            <label for="date_lost">When did you lose it? *</label>
-                            <input type="date" id="date_lost" name="date_lost"
+                            <input type="date" id="date_lost" name="date_lost" required placeholder=" "
                                 class="<?php echo isset($field_errors['date_lost']) ? 'field-error' : ''; ?>"
                                 value="<?php echo htmlspecialchars($date_lost ?? ''); ?>">
+                            <label for="date_lost">When did you lose it? *</label>
                             <?php if (isset($field_errors['date_lost'])): ?>
                                 <span class="field-error-message"><?php echo htmlspecialchars($field_errors['date_lost']); ?></span>
                             <?php endif; ?>

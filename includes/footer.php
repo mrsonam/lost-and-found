@@ -41,4 +41,5 @@ echo '
   <div class="container footer-bottom" style="text-align:center; padding-top:15px;">
     <p>© 2025 Lost & Found. All rights reserved.</p>
   </div>
-</footer>';
+</footer>
+<script src="js/main.js"></script>';

@@ -90,12 +90,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 <?php endif; ?>
 
-                <form method="POST" novalidate>
+                <form method="POST" novalidate class="floating-form">
                     <div class="form-group <?php echo isset($field_errors['otp']) ? 'has-error' : ''; ?>">
-                        <label for="otp">Enter OTP</label>
-                        <input type="text" id="otp" name="otp"
+                        <input type="text" id="otp" name="otp" required placeholder=" "
                             class="<?php echo isset($field_errors['otp']) ? 'field-error' : ''; ?>"
                             value="<?php echo htmlspecialchars($entered_otp ?? ''); ?>">
+                        <label for="otp">Enter OTP</label>
                         <?php if (isset($field_errors['otp'])): ?>
                             <span class="field-error-message"><?php echo htmlspecialchars($field_errors['otp']); ?></span>
                         <?php endif; ?>

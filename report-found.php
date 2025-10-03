@@ -162,14 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/main.css">
 
-  <style>
-    /* Floating labels without background for Report Found page */
-    .found-form-card .floating-form label {
-      background: none !important;
-      padding: 0 4px;
-      color: #555;
-    }
-  </style>
+
 </head>
 
 <body>
