@@ -2,8 +2,6 @@
 session_start();
 include 'config.php';
 require_once 'includes/auth.php';
-// Redirect to login if not authenticated   
-requireLogin();
 ?>
 <!doctype html>
 <html lang="en">
@@ -65,6 +63,7 @@ requireLogin();
             $item_status = htmlspecialchars($row['status'] ?? '');
             $item_type = htmlspecialchars($row['item_type'] ?? '');
             $item_category = htmlspecialchars($row['category_name'] ?? '');
+            $item_id = $row['id'];
 
             $status_class = '';
             if ($item_status == 'found') {
@@ -81,7 +80,8 @@ requireLogin();
                  data-type="' . $item_type . '"
                  data-description="' . strtolower($item_description) . '"
                  data-category="' . strtolower($item_category) . '"
-                 data-status="' . $item_status . '">
+                 data-status="' . $item_status . '"
+                 data-id="' . $item_id . '">
                 <img src="' . $image_path . '" alt="' . $item_title . '" />
                 <div class="item-body">
                     <div class="item-status ' . $status_class . '">' . ucfirst($item_status) . '</div>
@@ -110,6 +110,38 @@ requireLogin();
     </section>
   </main>
 
+  <!-- Modal for item preview -->
+  <div class="item-modal" id="itemModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalItemTitle"></h2>
+        <button class="close-modal" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img id="modalItemImage" src="" alt="" class="modal-image">
+        <div class="modal-status" id="modalItemStatus"></div>
+        <div class="modal-details">
+          <div class="detail-row">
+            <span class="detail-label">Location:</span>
+            <span class="detail-value" id="modalItemLocation"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Category:</span>
+            <span class="detail-value" id="modalItemCategory"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Type:</span>
+            <span class="detail-value" id="modalItemType"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Description:</span>
+            <span class="detail-value" id="modalItemDescription"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const searchInput = document.getElementById('searchInput');
@@ -118,6 +150,16 @@ requireLogin();
       const searchStats = document.getElementById('searchStats');
       const itemsGrid = document.getElementById('itemsGrid');
       const searchIcon = document.getElementById('searchIcon');
+      const itemModal = document.getElementById('itemModal');
+      const closeModal = document.getElementById('closeModal');
+      const modalItemTitle = document.getElementById('modalItemTitle');
+      const modalItemImage = document.getElementById('modalItemImage');
+      const modalItemStatus = document.getElementById('modalItemStatus');
+      const modalItemLocation = document.getElementById('modalItemLocation');
+      const modalItemCategory = document.getElementById('modalItemCategory');
+      const modalItemType = document.getElementById('modalItemType');
+      const modalItemDescription = document.getElementById('modalItemDescription');
+      
       let allItems = [];
       let searchTimeout;
 
@@ -125,6 +167,44 @@ requireLogin();
         allItems = Array.from(document.querySelectorAll('.item'));
         updateSearchStats(allItems.length, allItems.length);
         toggleClearButton();
+        
+        // Add click event listeners to all items
+        allItems.forEach(item => {
+          item.addEventListener('click', function() {
+            showItemPreview(this);
+          });
+        });
+      }
+
+      function showItemPreview(itemElement) {
+        // Get item data from data attributes
+        const title = itemElement.querySelector('.item-title').textContent;
+        const imageSrc = itemElement.querySelector('img').src;
+        const status = itemElement.querySelector('.item-status').textContent;
+        const statusClass = itemElement.querySelector('.item-status').className;
+        const location = itemElement.querySelector('.item-meta').textContent.replace('Location: ', '');
+        const category = itemElement.querySelector('.item-type').textContent.replace('Category: ', '');
+        const description = itemElement.getAttribute('data-description');
+        
+        // Populate modal with item data
+        modalItemTitle.textContent = title;
+        modalItemImage.src = imageSrc;
+        modalItemImage.alt = title;
+        modalItemStatus.textContent = status;
+        modalItemStatus.className = 'modal-status ' + statusClass;
+        modalItemLocation.textContent = location;
+        modalItemCategory.textContent = category;
+        modalItemType.textContent = itemElement.getAttribute('data-type');
+        modalItemDescription.textContent = description;
+        
+        // Show the modal
+        itemModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+      }
+
+      function closeItemPreview() {
+        itemModal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Re-enable scrolling
       }
 
       function performRealTimeSearch() {
@@ -210,6 +290,7 @@ requireLogin();
         performRealTimeSearch();
       }
 
+      // Event listeners
       searchInput.addEventListener('input', function() {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(performRealTimeSearch, 300);
@@ -242,18 +323,22 @@ requireLogin();
         this.style.borderColor = '#e0e0e0';
       });
 
-      allItems.forEach(item => {
-        item.addEventListener('mouseenter', function() {
-          this.style.transform = 'translateY(-5px)';
-          this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
-        });
-
-        item.addEventListener('mouseleave', function() {
-          this.style.transform = 'translateY(0)';
-          this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
-        });
+      // Modal event listeners
+      closeModal.addEventListener('click', closeItemPreview);
+      
+      // Close modal when clicking outside the content
+      itemModal.addEventListener('click', function(e) {
+        if (e.target === itemModal) {
+          closeItemPreview();
+        }
       });
-
+      
+      // Close modal with Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && itemModal.style.display === 'flex') {
+          closeItemPreview();
+        }
+      });
 
       initializeSearch();
     });
