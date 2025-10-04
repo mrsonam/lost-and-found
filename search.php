@@ -2,6 +2,7 @@
 session_start();
 include 'config.php';
 require_once 'includes/auth.php';
+lost-and-found
 ?>
 <!doctype html>
 <html lang="en">
