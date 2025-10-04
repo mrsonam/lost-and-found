@@ -28,7 +28,7 @@ requireLogin();
       <div class="available-search">
         <div class="search-section">
           <div class="search-icon-container" title="Click to focus search" id="searchIcon">
-            <span style="filter: brightness(0) invert(1);">🔍</span>
+            <span class="search-icon">🔍</span>
           </div>
           <div class="search-container">
             <input type="text" id="searchInput" placeholder="Search items by name, location, or description..." />
@@ -101,7 +101,7 @@ requireLogin();
               </div>';
 
           if (!$result) {
-            echo '<div class="no-items" style="color: #e74c3c;">
+            echo '<div class="no-items error-message">
                     <h3>Database Error</h3>
                     <p>Error: ' . $conn->error . '</p>
                   </div>';
@@ -161,7 +161,7 @@ requireLogin();
       const modalItemCategory = document.getElementById('modalItemCategory');
       const modalItemType = document.getElementById('modalItemType');
       const modalItemDescription = document.getElementById('modalItemDescription');
-      
+
       let allItems = [];
       let searchTimeout;
 
@@ -169,7 +169,7 @@ requireLogin();
         allItems = Array.from(document.querySelectorAll('.item'));
         updateSearchStats(allItems.length, allItems.length);
         toggleClearButton();
-        
+
         // Add click event listeners to all items
         allItems.forEach(item => {
           item.addEventListener('click', function() {
@@ -187,7 +187,7 @@ requireLogin();
         const location = itemElement.querySelector('.item-meta').textContent.replace('Location: ', '');
         const category = itemElement.querySelector('.item-type').textContent.replace('Category: ', '');
         const description = itemElement.getAttribute('data-description');
-        
+
         // Populate modal with item data
         modalItemTitle.textContent = title;
         modalItemImage.src = imageSrc;
@@ -198,7 +198,7 @@ requireLogin();
         modalItemCategory.textContent = category;
         modalItemType.textContent = itemElement.getAttribute('data-type');
         modalItemDescription.textContent = description;
-        
+
         // Show the modal
         itemModal.style.display = 'flex';
         document.body.style.overflow = 'hidden'; // Prevent scrolling
@@ -327,14 +327,14 @@ requireLogin();
 
       // Modal event listeners
       closeModal.addEventListener('click', closeItemPreview);
-      
+
       // Close modal when clicking outside the content
       itemModal.addEventListener('click', function(e) {
         if (e.target === itemModal) {
           closeItemPreview();
         }
       });
-      
+
       // Close modal with Escape key
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && itemModal.style.display === 'flex') {

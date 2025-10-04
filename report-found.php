@@ -173,43 +173,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     Item successfully reported!
   </div>
 
-  <style>
-    .popup-message {
-      display: none;
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #16a34a;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      font-weight: bold;
-      z-index: 9999;
-      animation: fadeInOut 3s forwards;
-    }
-
-    @keyframes fadeInOut {
-      0% {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-
-      10% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      90% {
-        opacity: 1;
-      }
-
-      100% {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-    }
-  </style>
 
 
   <main>
@@ -224,7 +187,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <!-- Form Section -->
     <section class="found-form-section">
       <div class="container">
-        <div class="found-form-card fade-in-up">
+        <div class="card found-form-card fade-in-up">
           <h2>Found Item Details</h2>
           <form action="report-found.php" method="post" enctype="multipart/form-data" class="floating-form" novalidate>
 
