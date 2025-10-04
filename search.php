@@ -2,7 +2,8 @@
 session_start();
 include 'config.php';
 require_once 'includes/auth.php';
-lost-and-found
+// Redirect to login if not authenticated   
+requireLogin();
 ?>
 <!doctype html>
 <html lang="en">
