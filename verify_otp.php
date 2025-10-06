@@ -72,38 +72,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Verify OTP - Lost & Found</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
     <?php include 'includes/navbar.php'; ?>
     <main>
-        <div class="container auth-container">
-            <div class="auth-form">
-                <h1>Verify OTP</h1>
-
-                <?php if (!empty($error_messages)): ?>
-                    <div class="error-messages">
-                        <?php foreach ($error_messages as $error): ?>
-                            <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-
-                <form method="POST" novalidate class="floating-form">
-                    <div class="form-group <?php echo isset($field_errors['otp']) ? 'has-error' : ''; ?>">
-                        <input type="text" id="otp" name="otp" required placeholder=" "
-                            class="<?php echo isset($field_errors['otp']) ? 'field-error' : ''; ?>"
-                            value="<?php echo htmlspecialchars($entered_otp ?? ''); ?>">
-                        <label for="otp">Enter OTP</label>
-                        <?php if (isset($field_errors['otp'])): ?>
-                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['otp']); ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Verify</button>
-                </form>
+        <!-- Modern Hero Section -->
+        <section class="auth-hero">
+            <div class="auth-hero-background">
+                <div class="auth-hero-pattern"></div>
             </div>
-        </div>
+            <div class="container auth-hero-content">
+                <div class="auth-hero-text">
+                    <h1 class="auth-hero-title">Verify Your Email</h1>
+                    <p class="auth-hero-subtitle">Enter the OTP code sent to your email address to complete your registration</p>
+                </div>
+                <div class="auth-form-container">
+                    <div class="auth-form-card">
+                        <div class="auth-form-header">
+                            <h2>Verify OTP</h2>
+                            <p>Check your email for the verification code</p>
+                        </div>
+
+                        <?php if (!empty($error_messages)): ?>
+                            <div class="error-messages">
+                                <?php foreach ($error_messages as $error): ?>
+                                    <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <form method="POST" novalidate class="floating-form">
+                            <div class="form-group <?php echo isset($field_errors['otp']) ? 'has-error' : ''; ?>">
+                                <input type="text" id="otp" name="otp" required placeholder=" "
+                                    class="<?php echo isset($field_errors['otp']) ? 'field-error' : ''; ?>"
+                                    value="<?php echo htmlspecialchars($entered_otp ?? ''); ?>">
+                                <label for="otp">Enter OTP</label>
+                                <?php if (isset($field_errors['otp'])): ?>
+                                    <span class="field-error-message"><?php echo htmlspecialchars($field_errors['otp']); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-large">
+                                <span>Verify</span>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
     <?php include 'includes/footer.php'; ?>
 </body>

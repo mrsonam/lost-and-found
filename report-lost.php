@@ -8,7 +8,7 @@ requireLogin();
 
 $error_messages = [];
 $field_errors = [];
-$success_message = '';
+$showSuccess = false;
 $categories = [];
 $old = [
     'title' => '',
@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 error_log("Lost Item Reported - User ID: " . $user['id'] . " reported item: " . $title . " at " . date('Y-m-d H:i:s'));
-                $success_message = 'Your lost item has been reported successfully!';
+                $showSuccess = true;
 
                 // Clear old values after success
                 $old = [
@@ -184,26 +184,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Lost Item - Lost & Found</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
+    <?php if ($showSuccess): ?>
+        <!-- Success Popup -->
+        <div id="success-popup" class="popup-message">
+            Lost item successfully reported!
+        </div>
+    <?php endif; ?>
+
     <?php include 'includes/navbar.php'; ?>
 
     <main>
-        <!-- Hero Section -->
-        <section class="found-hero">
-            <div class="container found-hero-inner">
-                <h1>Report Lost Item</h1>
-                <p>Help us help you find your lost item by providing detailed information below.</p>
+        <!-- Modern Hero Section -->
+        <section class="report-hero">
+            <div class="report-hero-background">
+                <div class="report-hero-pattern"></div>
+            </div>
+            <div class="container report-hero-content">
+                <div class="report-hero-text">
+                    <h1 class="report-hero-title">Report Lost Item</h1>
+                    <p class="report-hero-subtitle">Help us help you find your lost item by providing detailed information below</p>
+                </div>
             </div>
         </section>
 
         <!-- Form Section -->
-        <section class="found-form-section">
+        <section class="report-form-section">
             <div class="container">
-                <div class="card found-form-card fade-in-up">
-                    <h2>Lost Item Details</h2>
+                <div class="report-form-card">
+                    <div class="report-form-header">
+                        <h2>Lost Item Details</h2>
+                        <p>Please provide as much detail as possible to help with identification</p>
+                    </div>
 
                     <?php if (!empty($error_messages)): ?>
                         <div class="error-messages">
@@ -213,9 +231,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     <?php endif; ?>
 
-                    <?php if ($success_message): ?>
-                        <div class="success-message"><?php echo htmlspecialchars($success_message); ?></div>
-                    <?php endif; ?>
 
                     <form action="" method="post" enctype="multipart/form-data" class="floating-form" novalidate>
 
@@ -295,9 +310,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <?php endif; ?>
                         </div>
 
-                        <button type="submit" class="btn-animated">Report Lost Item</button>
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <span>Report Lost Item</span>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
                     </form>
                 </div>
+            </div>
             </div>
         </section>
     </main>
@@ -325,6 +346,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Set max date to today for date input
         document.getElementById('date_lost').max = new Date().toISOString().split('T')[0];
+
+        // Success popup - auto-animate when present
+        document.addEventListener("DOMContentLoaded", function() {
+            <?php if ($showSuccess): ?>
+                // Toast will auto-animate via CSS, no manual control needed
+            <?php endif; ?>
+        });
     </script>
 </body>
 

@@ -33,6 +33,9 @@ $conn->close();
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Contact Us - Lost & Found</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css"> <!-- global styles -->
 
 </head>
@@ -40,27 +43,24 @@ $conn->close();
 <body>
   <?php include 'includes/navbar.php'; ?>
 
-  <!-- Success Popup -->
-  <div id="success-popup" class="popup-message">
-    Message sent successfully!
-  </div>
+  <?php if ($showSuccess): ?>
+    <!-- Success Popup -->
+    <div id="success-popup" class="popup-message">
+      Message sent successfully!
+    </div>
+  <?php endif; ?>
 
   <main>
-    <!-- Hero -->
-    <section class="contact-hero">
-      <div class="contact-hero-inner">
-        <h1>Contact Us</h1>
-        <p>Have a question or found something? Let’s reconnect people with their belongings.</p>
-
-        <!-- Floating shapes -->
-        <span class="floating-shape shape-circle"></span>
-        <span class="floating-shape shape-triangle"></span>
-        <span class="floating-shape shape-square"></span>
-        <span class="floating-shape shape-diamond"></span>
-        <span class="floating-shape shape-circle"></span>
-        <span class="floating-shape shape-triangle"></span>
-        <span class="floating-shape shape-square"></span>
-        <span class="floating-shape shape-diamond"></span>
+    <!-- Modern Hero Section -->
+    <section class="contact-hero-modern">
+      <div class="contact-hero-background">
+        <div class="contact-hero-pattern"></div>
+      </div>
+      <div class="container contact-hero-content">
+        <div class="contact-hero-text">
+          <h1 class="contact-hero-title">Contact Us</h1>
+          <p class="contact-hero-subtitle">Have a question or found something? Let's reconnect people with their belongings</p>
+        </div>
       </div>
     </section>
 
@@ -86,10 +86,13 @@ $conn->close();
     </section>
 
     <!-- Contact Form -->
-    <section class="contact-form-section">
+    <section class="contact-form-section-modern">
       <div class="container">
-        <div class="card found-form-card fade-in-left">
-          <h2>Send a Message</h2>
+        <div class="contact-form-card">
+          <div class="contact-form-header">
+            <h2>Send a Message</h2>
+            <p>We'd love to hear from you. Send us a message and we'll respond as soon as possible</p>
+          </div>
           <form action="contact.php" method="post" class="floating-form" novalidate>
             <div class="form-group">
               <input type="text" id="name" name="name" placeholder=" " required>
@@ -111,7 +114,12 @@ $conn->close();
               <textarea id="message" name="message" rows="5" placeholder=" " required></textarea>
               <label for="message">Message</label>
             </div>
-            <button type="submit" class="btn-animated">Send Message</button>
+            <button type="submit" class="btn btn-primary btn-large">
+              <span>Send Message</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
           </form>
         </div>
       </div>
@@ -135,11 +143,7 @@ $conn->close();
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       <?php if ($showSuccess): ?>
-        let popup = document.getElementById("success-popup");
-        popup.style.display = "block";
-        setTimeout(() => {
-          popup.style.display = "none";
-        }, 3000);
+        // Toast will auto-animate via CSS, no manual control needed
       <?php endif; ?>
 
       // Contact form specific validation

@@ -11,7 +11,10 @@ requireLogin();
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lost & Found - Homepage</title>
+  <title>Lost & Found - Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 
@@ -19,95 +22,120 @@ requireLogin();
   <?php include 'includes/navbar.php'; ?>
 
   <main>
-    <section class="available-items-page">
-      <div class="page-title">
-        <h1>Available Items</h1>
-        <p>Search from the list of found or reported items.</p>
-      </div>
 
-      <div class="available-search">
-        <div class="search-section">
-          <div class="search-icon-container" title="Click to focus search" id="searchIcon">
-            <span class="search-icon">🔍</span>
+    <!-- Search Form Section -->
+    <section class="search-page-modern">
+      <div class="container">
+        <div class="search-card">
+          <div class="search-header">
+            <h2>Search Items</h2>
+            <p>Enter keywords to find specific items in our database</p>
           </div>
-          <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search items by name, location, or description..." />
-            <button type="button" id="clearSearch" class="clear-search" title="Clear search">×</button>
-            <button type="button" id="searchBtn">Search</button>
-          </div>
+          <form class="search-form-modern" id="searchForm">
+            <div class="search-input-group">
+              <input type="text" id="searchInput" placeholder="Search by name, location, or description..." value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>">
+              <button type="button" id="clearSearch" class="btn btn-secondary" style="display: none;">Clear</button>
+            </div>
+          </form>
         </div>
       </div>
+    </section>
 
-      <div class="search-stats" id="searchStats">
-        Loading items...
-      </div>
+    <!-- Results Section -->
+    <section class="search-results-section">
+      <div class="container">
+        <div class="search-stats" id="searchStats">
+          Loading items...
+        </div>
 
-      <div class="items-grid" id="itemsGrid">
-        <?php
-        // Query to get items along with their images
-        $sql = "SELECT i.*, ii.image_path, c.name as category_name 
+        <div class="items-grid" id="itemsGrid">
+          <?php
+          // Query to get items along with their images and user information
+          $sql = "SELECT i.*, ii.image_path, c.name as category_name, 
+                CONCAT(u.first_name, ' ', u.last_name) as user_name, 
+                u.email as user_email, u.phone as user_phone, i.contact_method
             FROM items i 
             LEFT JOIN item_images ii ON i.id = ii.item_id 
             LEFT JOIN categories c ON i.category_id = c.id 
+            LEFT JOIN users u ON i.user_id = u.id
             ORDER BY i.created_at DESC";
 
-        $result = $conn->query($sql);
+          $result = $conn->query($sql);
 
-        if ($result && $result->num_rows > 0) {
-          $totalItems = $result->num_rows;
-          echo '<script>window.totalItems = ' . $totalItems . ';</script>';
+          if ($result && $result->num_rows > 0) {
+            $totalItems = $result->num_rows;
+            echo '<script>window.totalItems = ' . $totalItems . ';</script>';
 
-          while ($row = $result->fetch_assoc()) {
-            $image_path = !empty($row['image_path']) ? $row['image_path'] : 'images/placeholder.png';
-            $item_title = htmlspecialchars($row['title'] ?? '');
-            $item_location = htmlspecialchars($row['location_found'] ?? '');
-            $item_description = htmlspecialchars($row['description'] ?? '');
-            $item_status = htmlspecialchars($row['status'] ?? '');
-            $item_type = htmlspecialchars($row['item_type'] ?? '');
-            $item_category = htmlspecialchars($row['category_name'] ?? '');
-            $item_id = $row['id'];
+            while ($row = $result->fetch_assoc()) {
+              $image_path = !empty($row['image_path']) ? $row['image_path'] : 'images/placeholder.png';
+              $item_title = htmlspecialchars($row['title'] ?? '');
+              $item_location = htmlspecialchars($row['location_found'] ?? $row['location_lost']);
+              $item_description = htmlspecialchars($row['description'] ?? '');
+              $item_type = htmlspecialchars($row['item_type'] ?? '');
+              $item_category = htmlspecialchars($row['category_name'] ?? '');
+              $item_id = $row['id'];
 
-            $status_class = '';
-            if ($item_status == 'found') {
-              $status_class = 'status-found';
-            } elseif ($item_status == 'lost') {
-              $status_class = 'status-lost';
-            } else {
-              $status_class = 'status-other';
-            }
+              // User information
+              $user_name = htmlspecialchars($row['user_name'] ?? 'Unknown User');
+              $user_email = htmlspecialchars($row['user_email'] ?? '');
+              $user_phone = htmlspecialchars($row['user_phone'] ?? '');
+              $contact_method = htmlspecialchars($row['contact_method'] ?? '');
 
-            echo '
+              $status_class = '';
+              $status_text = '';
+              if ($item_type == 'found') {
+                $status_class = 'badge-found';
+                $status_text = 'Found';
+              } elseif ($item_type == 'lost') {
+                $status_class = 'badge-lost';
+                $status_text = 'Lost';
+              } else {
+                $status_class = 'badge-lost';
+                $status_text = 'Lost';
+              }
+
+              echo '
             <div class="item" data-title="' . strtolower($item_title) . '" 
                  data-location="' . strtolower($item_location) . '" 
-                 data-type="' . $item_type . '"
                  data-description="' . strtolower($item_description) . '"
                  data-category="' . strtolower($item_category) . '"
-                 data-status="' . $item_status . '"
-                 data-id="' . $item_id . '">
-                <img src="' . $image_path . '" alt="' . $item_title . '" />
-                <div class="item-body">
-                    <div class="item-status ' . $status_class . '">' . ucfirst($item_status) . '</div>
+                 data-status="' . $item_type . '"
+                 data-id="' . $item_id . '"
+                 data-user-name="' . $user_name . '"
+                 data-user-email="' . $user_email . '"
+                 data-user-phone="' . $user_phone . '"
+                 data-contact-method="' . $contact_method . '">
+                <div class="item-image-container">
+                    <img src="' . $image_path . '" alt="' . $item_title . '" />
+                    <div class="item-badge">
+                        <span class="badge ' . $status_class . '">' . $status_text . '</span>
+                    </div>
+                </div>
+                <div class="item-content">
                     <div class="item-title">' . $item_title . '</div>
-                    <div class="item-meta">Location: ' . $item_location . '</div>
                     <div class="item-description">' . substr($item_description, 0, 100) . '...</div>
-                    <div class="item-type">Category: ' . $item_category . '</div>
+                    <div class="item-meta">
+                        <span class="item-category">' . $item_category . '</span>
+                        <span class="item-date">Posted by: ' . $user_name . '</span>
+                    </div>
                 </div>
             </div>';
-          }
-        } else {
-          echo '<div class="no-items">
+            }
+          } else {
+            echo '<div class="no-items">
                 <h3>No items found in the database</h3>
                 <p>Please check your database connection or add some items to get started.</p>
               </div>';
 
-          if (!$result) {
-            echo '<div class="no-items error-message">
+            if (!$result) {
+              echo '<div class="no-items error-message">
                     <h3>Database Error</h3>
                     <p>Error: ' . $conn->error . '</p>
                   </div>';
+            }
           }
-        }
-        ?>
+          ?>
+        </div>
       </div>
     </section>
   </main>
@@ -116,28 +144,48 @@ requireLogin();
   <div class="item-modal" id="itemModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title" id="modalItemTitle"></h2>
-        <button class="close-modal" id="closeModal">&times;</button>
+        <button class="close-modal" id="closeModal">×</button>
       </div>
       <div class="modal-body">
-        <img id="modalItemImage" src="" alt="" class="modal-image">
-        <div class="modal-status" id="modalItemStatus"></div>
-        <div class="modal-details">
-          <div class="detail-row">
-            <span class="detail-label">Location:</span>
-            <span class="detail-value" id="modalItemLocation"></span>
+        <div class="modal-image-container">
+          <img id="modalItemImage" src="" alt="" class="modal-image">
+          <div class="item-badge">
+            <span class="badge" id="modalItemStatus"></span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Category:</span>
-            <span class="detail-value" id="modalItemCategory"></span>
+        </div>
+        <div class="modal-info">
+          <h2 class="modal-title" id="modalItemTitle"></h2>
+          <p class="modal-description" id="modalItemDescription"></p>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Location</div>
+              <div class="info-value" id="modalItemLocation"></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Category</div>
+              <div class="info-value" id="modalItemCategory"></div>
+            </div>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Type:</span>
-            <span class="detail-value" id="modalItemType"></span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Description:</span>
-            <span class="detail-value" id="modalItemDescription"></span>
+          <div class="contact-section">
+            <h3>Contact Information</h3>
+            <div class="contact-grid">
+              <div class="contact-item">
+                <div class="contact-label">Posted by</div>
+                <div class="contact-value" id="modalItemUser"></div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-label">Email</div>
+                <div class="contact-value" id="modalItemEmail"></div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-label">Phone</div>
+                <div class="contact-value" id="modalItemPhone"></div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-label">Preferred Contact</div>
+                <div class="contact-value" id="modalItemContactMethod"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -147,11 +195,9 @@ requireLogin();
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const searchInput = document.getElementById('searchInput');
-      const searchBtn = document.getElementById('searchBtn');
       const clearSearch = document.getElementById('clearSearch');
       const searchStats = document.getElementById('searchStats');
       const itemsGrid = document.getElementById('itemsGrid');
-      const searchIcon = document.getElementById('searchIcon');
       const itemModal = document.getElementById('itemModal');
       const closeModal = document.getElementById('closeModal');
       const modalItemTitle = document.getElementById('modalItemTitle');
@@ -159,8 +205,11 @@ requireLogin();
       const modalItemStatus = document.getElementById('modalItemStatus');
       const modalItemLocation = document.getElementById('modalItemLocation');
       const modalItemCategory = document.getElementById('modalItemCategory');
-      const modalItemType = document.getElementById('modalItemType');
       const modalItemDescription = document.getElementById('modalItemDescription');
+      const modalItemUser = document.getElementById('modalItemUser');
+      const modalItemContactMethod = document.getElementById('modalItemContactMethod');
+      const modalItemEmail = document.getElementById('modalItemEmail');
+      const modalItemPhone = document.getElementById('modalItemPhone');
 
       let allItems = [];
       let searchTimeout;
@@ -176,28 +225,42 @@ requireLogin();
             showItemPreview(this);
           });
         });
+
+        // Auto-search if there's a query parameter from homepage
+        <?php if (!empty($_GET['q'])): ?>
+          performRealTimeSearch();
+        <?php endif; ?>
       }
 
       function showItemPreview(itemElement) {
         // Get item data from data attributes
         const title = itemElement.querySelector('.item-title').textContent;
         const imageSrc = itemElement.querySelector('img').src;
-        const status = itemElement.querySelector('.item-status').textContent;
-        const statusClass = itemElement.querySelector('.item-status').className;
-        const location = itemElement.querySelector('.item-meta').textContent.replace('Location: ', '');
-        const category = itemElement.querySelector('.item-type').textContent.replace('Category: ', '');
+        const status = itemElement.querySelector('.item-badge .badge').textContent;
+        const statusClass = itemElement.querySelector('.item-badge .badge').className;
+        const location = itemElement.getAttribute('data-location');
+        const category = itemElement.querySelector('.item-category').textContent;
         const description = itemElement.getAttribute('data-description');
+
+        // Get user information from data attributes
+        const userName = itemElement.getAttribute('data-user-name');
+        const userEmail = itemElement.getAttribute('data-user-email');
+        const userPhone = itemElement.getAttribute('data-user-phone');
+        const contactMethod = itemElement.getAttribute('data-contact-method');
 
         // Populate modal with item data
         modalItemTitle.textContent = title;
         modalItemImage.src = imageSrc;
         modalItemImage.alt = title;
         modalItemStatus.textContent = status;
-        modalItemStatus.className = 'modal-status ' + statusClass;
+        modalItemStatus.className = 'badge ' + (status.toLowerCase() === 'found' ? 'badge-found' : 'badge-lost');
         modalItemLocation.textContent = location;
         modalItemCategory.textContent = category;
-        modalItemType.textContent = itemElement.getAttribute('data-type');
         modalItemDescription.textContent = description;
+        modalItemUser.textContent = userName;
+        modalItemContactMethod.textContent = contactMethod.charAt(0).toUpperCase() + contactMethod.slice(1);
+        modalItemEmail.textContent = userEmail;
+        modalItemPhone.textContent = userPhone;
 
         // Show the modal
         itemModal.style.display = 'flex';
@@ -249,7 +312,7 @@ requireLogin();
           return;
         }
 
-        const elements = item.querySelectorAll('.item-title, .item-meta, .item-description');
+        const elements = item.querySelectorAll('.item-title, .item-description, .item-category');
         elements.forEach(element => {
           const text = element.textContent;
           const regex = new RegExp(`(${searchTerm})`, 'gi');
@@ -259,7 +322,7 @@ requireLogin();
       }
 
       function removeHighlights(item) {
-        const elements = item.querySelectorAll('.item-title, .item-meta, .item-description');
+        const elements = item.querySelectorAll('.item-title, .item-description, .item-category');
         elements.forEach(element => {
           element.innerHTML = element.textContent;
         });
@@ -280,7 +343,7 @@ requireLogin();
 
       function toggleClearButton() {
         if (searchInput.value.trim() !== '') {
-          clearSearch.style.display = 'flex';
+          clearSearch.style.display = 'inline-block';
         } else {
           clearSearch.style.display = 'none';
         }
@@ -304,26 +367,8 @@ requireLogin();
         }
       });
 
-      searchBtn.addEventListener('click', performRealTimeSearch);
       clearSearch.addEventListener('click', clearSearchHandler);
 
-      searchIcon.addEventListener('click', function() {
-        searchInput.focus();
-        searchIcon.style.transform = 'scale(1.1) rotate(10deg)';
-        setTimeout(() => {
-          searchIcon.style.transform = 'scale(1.1)';
-        }, 200);
-      });
-
-      searchInput.addEventListener('focus', function() {
-        this.style.transform = 'scale(1.02)';
-        this.style.borderColor = '#14b8a6';
-      });
-
-      searchInput.addEventListener('blur', function() {
-        this.style.transform = 'scale(1)';
-        this.style.borderColor = '#e0e0e0';
-      });
 
       // Modal event listeners
       closeModal.addEventListener('click', closeItemPreview);

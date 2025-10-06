@@ -11,7 +11,16 @@ echo '
   <header class="site-header">
     <div class="container nav">
       <a class="brand" href="index.php">Lost & Found</a>
-      <nav class="nav-links" aria-label="Primary">
+      
+      <!-- Hamburger Menu Button -->
+      <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <!-- Navigation Menu -->
+      <nav class="nav-links" id="nav-links" aria-label="Primary">
         <a class="' . ($current_page == 'index.php' ? 'active' : '') . '" href="index.php">Home</a>';
 
 // Show report links only when logged in
@@ -37,10 +46,5 @@ if (!$user) {
 
 echo '
       </nav>
-      <div class="nav-auth">';
-
-
-echo '
-      </div>
     </div>
   </header>';

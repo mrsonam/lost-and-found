@@ -159,8 +159,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Report Found Item - Lost & Found</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/main.css">
 
 
 </head>
@@ -168,27 +170,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <body>
   <?php include 'includes/navbar.php'; ?>
 
-  <!-- Success Popup -->
-  <div id="success-popup" class="popup-message">
-    Item successfully reported!
-  </div>
+  <?php if ($showSuccess): ?>
+    <!-- Success Popup -->
+    <div id="success-popup" class="popup-message">
+      Item successfully reported!
+    </div>
+  <?php endif; ?>
 
 
 
   <main>
-    <!-- Hero -->
-    <section class="found-hero">
-      <div class="container found-hero-inner">
-        <h1>Report Found Item</h1>
-        <p>Fill in the details below so we can help reunite items with their rightful owners.</p>
+    <!-- Modern Hero Section -->
+    <section class="report-hero">
+      <div class="report-hero-background">
+        <div class="report-hero-pattern"></div>
+      </div>
+      <div class="container report-hero-content">
+        <div class="report-hero-text">
+          <h1 class="report-hero-title">Report Found Item</h1>
+          <p class="report-hero-subtitle">Fill in the details below so we can help reunite items with their rightful owners</p>
+        </div>
       </div>
     </section>
 
     <!-- Form Section -->
-    <section class="found-form-section">
+    <section class="report-form-section">
       <div class="container">
-        <div class="card found-form-card fade-in-up">
-          <h2>Found Item Details</h2>
+        <div class="report-form-card">
+          <div class="report-form-header">
+            <h2>Found Item Details</h2>
+            <p>Please provide as much detail as possible to help with identification</p>
+          </div>
           <form action="report-found.php" method="post" enctype="multipart/form-data" class="floating-form" novalidate>
 
             <!-- Item Name -->
@@ -277,7 +289,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
               <?php endif; ?>
             </div>
 
-            <button type="submit" class="btn-animated">Submit Item</button>
+            <button type="submit" class="btn btn-primary btn-large">
+              <span>Submit Item</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
           </form>
         </div>
       </div>
@@ -304,14 +321,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       }
     });
 
-    // Success popup
+    // Success popup - auto-animate when present
     document.addEventListener("DOMContentLoaded", function() {
       <?php if ($showSuccess): ?>
-        let popup = document.getElementById("success-popup");
-        popup.style.display = "block";
-        setTimeout(() => {
-          popup.style.display = "none";
-        }, 3000);
+        // Toast will auto-animate via CSS, no manual control needed
       <?php endif; ?>
     });
   </script>

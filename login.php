@@ -4,6 +4,7 @@ require_once 'config/database.php';
 
 $error_messages = [];
 $field_errors = [];
+$showSuccess = false;
 
 // Redirect to home if already logged in
 if (isset($_SESSION['user_id'])) {
@@ -63,10 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['session_token'] = $session_token;
                 error_log("Login Success - User ID: " . $user['id'] . " logged in successfully at " . date('Y-m-d H:i:s'));
 
-                // Redirect to intended page or home
-                $redirect = $_GET['redirect'] ?? 'index.php';
-                header('Location: ' . $redirect);
-                exit();
+                // Set success flag for toast display
+                $showSuccess = true;
             }
         } else {
             if (!$user) {
@@ -90,57 +89,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - Lost & Found</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
+    <?php if ($showSuccess): ?>
+        <!-- Success Popup -->
+        <div id="success-popup" class="popup-message">
+            Login successful! Redirecting...
+        </div>
+    <?php endif; ?>
+
     <?php include 'includes/navbar.php'; ?>
 
     <main>
-        <div class="container auth-container">
-            <div class="auth-form">
-                <h1>Sign In</h1>
-                <p>Welcome back! Please sign in to your account</p>
+        <!-- Modern Hero Section -->
+        <section class="auth-hero">
+            <div class="auth-hero-background">
+                <div class="auth-hero-pattern"></div>
+            </div>
+            <div class="container auth-hero-content">
+                <div class="auth-hero-text">
+                    <h1 class="auth-hero-title">Welcome Back</h1>
+                    <p class="auth-hero-subtitle">Sign in to your account and continue helping reunite lost items with their owners</p>
+                </div>
+                <div class="auth-form-container">
+                    <div class="auth-form-card">
+                        <div class="auth-form-header">
+                            <h2>Sign In</h2>
+                            <p>Enter your credentials to access your account</p>
+                        </div>
 
-                <?php if (!empty($error_messages)): ?>
-                    <div class="error-messages">
-                        <?php foreach ($error_messages as $error): ?>
-                            <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-
-                <form method="POST" action="" class="floating-form" novalidate>
-                    <div class="form-group <?php echo isset($field_errors['email']) ? 'has-error' : ''; ?>">
-                        <input id="email" name="email" required placeholder=" "
-                            class="<?php echo isset($field_errors['email']) ? 'field-error' : ''; ?>"
-                            value="<?php echo htmlspecialchars($email ?? ''); ?>">
-                        <label for="email">Email Address</label>
-                        <?php if (isset($field_errors['email'])): ?>
-                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['email']); ?></span>
+                        <?php if (!empty($error_messages)): ?>
+                            <div class="error-messages">
+                                <?php foreach ($error_messages as $error): ?>
+                                    <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
+                                <?php endforeach; ?>
+                            </div>
                         <?php endif; ?>
+
+                        <form method="POST" action="" class="floating-form" novalidate>
+                            <div class="form-group <?php echo isset($field_errors['email']) ? 'has-error' : ''; ?>">
+                                <input id="email" name="email" required placeholder=" "
+                                    class="<?php echo isset($field_errors['email']) ? 'field-error' : ''; ?>"
+                                    value="<?php echo htmlspecialchars($email ?? ''); ?>">
+                                <label for="email">Email Address</label>
+                                <?php if (isset($field_errors['email'])): ?>
+                                    <span class="field-error-message"><?php echo htmlspecialchars($field_errors['email']); ?></span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="form-group <?php echo isset($field_errors['password']) ? 'has-error' : ''; ?>">
+                                <input type="password" id="password" name="password" required placeholder=" "
+                                    class="<?php echo isset($field_errors['password']) ? 'field-error' : ''; ?>">
+                                <label for="password">Password</label>
+                                <?php if (isset($field_errors['password'])): ?>
+                                    <span class="field-error-message"><?php echo htmlspecialchars($field_errors['password']); ?></span>
+                                <?php endif; ?>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-large">
+                                <span>Sign In</span>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                        </form>
+
+                        <div class="auth-links">
+                            <p>Don't have an account? <a href="register.php">Create one here</a></p>
+                        </div>
                     </div>
-
-                    <div class="form-group <?php echo isset($field_errors['password']) ? 'has-error' : ''; ?>">
-                        <input type="password" id="password" name="password" required placeholder=" "
-                            class="<?php echo isset($field_errors['password']) ? 'field-error' : ''; ?>">
-                        <label for="password">Password</label>
-                        <?php if (isset($field_errors['password'])): ?>
-                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['password']); ?></span>
-                        <?php endif; ?>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-full-width">Sign In</button>
-                </form>
-
-                <div class="auth-links">
-                    <p>Don't have an account? <a href="register.php">Create one here</a></p>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 
     <?php include 'includes/footer.php'; ?>
+
+    <script>
+        // Success popup and redirect
+        document.addEventListener("DOMContentLoaded", function() {
+            <?php if ($showSuccess): ?>
+                // Show success toast
+                let popup = document.getElementById("success-popup");
+                if (popup) {
+                    popup.style.display = "block";
+                }
+
+                // Redirect after 2 seconds
+                setTimeout(() => {
+                    const redirect = "<?php echo $_GET['redirect'] ?? 'index.php'; ?>";
+                    window.location.href = redirect;
+                }, 2000);
+            <?php endif; ?>
+        });
+    </script>
 </body>
 
 </html>

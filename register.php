@@ -12,7 +12,7 @@ use PHPMailer\PHPMailer\Exception;
 
 $error_messages = [];
 $field_errors = [];
-$success_message = '';
+$showSuccess = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Step 1 — Collect form data
@@ -115,9 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Store email in session for OTP verification
                     $_SESSION['pending_email'] = $email;
 
-                    // Correct redirect path
-                    header("Location: /lost-and-found/verify_otp.php");
-                    exit();
+                    // Set success flag for toast display
+                    $showSuccess = true;
                 } catch (Exception $e) {
                     $error_messages[] = "Could not send OTP email. Mailer Error: {$mail->ErrorInfo}";
                 }
@@ -136,81 +135,130 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Register - Lost & Found</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
+    <?php if ($showSuccess): ?>
+        <!-- Success Popup -->
+        <div id="success-popup" class="popup-message">
+            Registration successful! Please check your email for OTP verification.
+        </div>
+    <?php endif; ?>
+
     <?php include 'includes/navbar.php'; ?>
     <main>
-        <div class="container auth-container">
-            <div class="auth-form">
-                <h1>Create Account</h1>
-                <p>Join our community to report lost and found items</p>
-
-                <?php if (!empty($error_messages)): ?>
-                    <div class="error-messages">
-                        <?php foreach ($error_messages as $error): ?>
-                            <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-
-                <form method="POST" novalidate class="floating-form">
-                    <div class="form-group <?php echo isset($field_errors['email']) ? 'has-error' : ''; ?>">
-                        <input type="email" name="email" required placeholder=" "
-                            class="<?php echo isset($field_errors['email']) ? 'field-error' : ''; ?>"
-                            value="<?php echo htmlspecialchars($email ?? ''); ?>">
-                        <label>Email Address *</label>
-                        <?php if (isset($field_errors['email'])): ?>
-                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['email']); ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="form-group <?php echo isset($field_errors['first_name']) ? 'has-error' : ''; ?>">
-                        <input type="text" name="first_name" required placeholder=" "
-                            class="<?php echo isset($field_errors['first_name']) ? 'field-error' : ''; ?>"
-                            value="<?php echo htmlspecialchars($first_name ?? ''); ?>">
-                        <label>First Name *</label>
-                        <?php if (isset($field_errors['first_name'])): ?>
-                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['first_name']); ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="form-group <?php echo isset($field_errors['last_name']) ? 'has-error' : ''; ?>">
-                        <input type="text" name="last_name" required placeholder=" "
-                            class="<?php echo isset($field_errors['last_name']) ? 'field-error' : ''; ?>"
-                            value="<?php echo htmlspecialchars($last_name ?? ''); ?>">
-                        <label>Last Name *</label>
-                        <?php if (isset($field_errors['last_name'])): ?>
-                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['last_name']); ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="form-group">
-                        <input type="tel" name="phone" placeholder=" " value="<?php echo htmlspecialchars($phone ?? ''); ?>">
-                        <label>Phone Number</label>
-                    </div>
-                    <div class="form-group <?php echo isset($field_errors['password']) ? 'has-error' : ''; ?>">
-                        <input type="password" name="password" required placeholder=" "
-                            class="<?php echo isset($field_errors['password']) ? 'field-error' : ''; ?>">
-                        <label>Password *</label>
-                        <?php if (isset($field_errors['password'])): ?>
-                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['password']); ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="form-group <?php echo isset($field_errors['confirm_password']) ? 'has-error' : ''; ?>">
-                        <input type="password" name="confirm_password" required placeholder=" "
-                            class="<?php echo isset($field_errors['confirm_password']) ? 'field-error' : ''; ?>">
-                        <label>Confirm Password *</label>
-                        <?php if (isset($field_errors['confirm_password'])): ?>
-                            <span class="field-error-message"><?php echo htmlspecialchars($field_errors['confirm_password']); ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Create Account</button>
-                </form>
-
-                <p>Already have an account? <a href="login.php">Sign in here</a></p>
+        <!-- Modern Hero Section -->
+        <section class="auth-hero">
+            <div class="auth-hero-background">
+                <div class="auth-hero-pattern"></div>
             </div>
-        </div>
+            <div class="container auth-hero-content">
+                <div class="auth-hero-text">
+                    <h1 class="auth-hero-title">Join Our Community</h1>
+                    <p class="auth-hero-subtitle">Create your account and start helping reunite lost items with their owners</p>
+                </div>
+                <div class="auth-form-container">
+                    <div class="auth-form-card">
+                        <div class="auth-form-header">
+                            <h2>Create Account</h2>
+                            <p>Join our community to report lost and found items</p>
+                        </div>
+
+                        <?php if (!empty($error_messages)): ?>
+                            <div class="error-messages">
+                                <?php foreach ($error_messages as $error): ?>
+                                    <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <form method="POST" novalidate class="floating-form">
+                            <div class="form-group <?php echo isset($field_errors['email']) ? 'has-error' : ''; ?>">
+                                <input type="email" name="email" required placeholder=" "
+                                    class="<?php echo isset($field_errors['email']) ? 'field-error' : ''; ?>"
+                                    value="<?php echo htmlspecialchars($email ?? ''); ?>">
+                                <label>Email Address</label>
+                                <?php if (isset($field_errors['email'])): ?>
+                                    <span class="field-error-message"><?php echo htmlspecialchars($field_errors['email']); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="form-group <?php echo isset($field_errors['first_name']) ? 'has-error' : ''; ?>">
+                                <input type="text" name="first_name" required placeholder=" "
+                                    class="<?php echo isset($field_errors['first_name']) ? 'field-error' : ''; ?>"
+                                    value="<?php echo htmlspecialchars($first_name ?? ''); ?>">
+                                <label>First Name</label>
+                                <?php if (isset($field_errors['first_name'])): ?>
+                                    <span class="field-error-message"><?php echo htmlspecialchars($field_errors['first_name']); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="form-group <?php echo isset($field_errors['last_name']) ? 'has-error' : ''; ?>">
+                                <input type="text" name="last_name" required placeholder=" "
+                                    class="<?php echo isset($field_errors['last_name']) ? 'field-error' : ''; ?>"
+                                    value="<?php echo htmlspecialchars($last_name ?? ''); ?>">
+                                <label>Last Name</label>
+                                <?php if (isset($field_errors['last_name'])): ?>
+                                    <span class="field-error-message"><?php echo htmlspecialchars($field_errors['last_name']); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" name="phone" placeholder=" " value="<?php echo htmlspecialchars($phone ?? ''); ?>">
+                                <label>Phone Number</label>
+                            </div>
+                            <div class="form-group <?php echo isset($field_errors['password']) ? 'has-error' : ''; ?>">
+                                <input type="password" name="password" required placeholder=" "
+                                    class="<?php echo isset($field_errors['password']) ? 'field-error' : ''; ?>">
+                                <label>Password</label>
+                                <?php if (isset($field_errors['password'])): ?>
+                                    <span class="field-error-message"><?php echo htmlspecialchars($field_errors['password']); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="form-group <?php echo isset($field_errors['confirm_password']) ? 'has-error' : ''; ?>">
+                                <input type="password" name="confirm_password" required placeholder=" "
+                                    class="<?php echo isset($field_errors['confirm_password']) ? 'field-error' : ''; ?>">
+                                <label>Confirm Password</label>
+                                <?php if (isset($field_errors['confirm_password'])): ?>
+                                    <span class="field-error-message"><?php echo htmlspecialchars($field_errors['confirm_password']); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-large">
+                                <span>Create Account</span>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                        </form>
+
+                        <div class="auth-links">
+                            <p>Already have an account? <a href="login.php">Sign in here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
     <?php include 'includes/footer.php'; ?>
+
+    <script>
+        // Success popup and redirect
+        document.addEventListener("DOMContentLoaded", function() {
+            <?php if ($showSuccess): ?>
+                // Show success toast
+                let popup = document.getElementById("success-popup");
+                if (popup) {
+                    popup.style.display = "block";
+                }
+
+                // Redirect to OTP verification after 3 seconds
+                setTimeout(() => {
+                    window.location.href = "verify_otp.php";
+                }, 3000);
+            <?php endif; ?>
+        });
+    </script>
 </body>
 
 </html>
