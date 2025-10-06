@@ -10,6 +10,14 @@ $error_messages = [];
 $field_errors = [];
 $success_message = '';
 $categories = [];
+$old = [
+    'title' => '',
+    'description' => '',
+    'category_id' => '',
+    'location_lost' => '',
+    'date_lost' => '',
+    'contact_method' => 'both'
+];
 
 // Get current user info
 $user = getCurrentUser();
@@ -23,35 +31,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Debug: Log form submission
     error_log("Form submitted - POST data: " . print_r($_POST, true));
     error_log("Form submitted - FILES data: " . print_r($_FILES, true));
-    $title = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $category_id = $_POST['category_id'] ?? '';
-    $location_lost = trim($_POST['location_lost'] ?? '');
-    $date_lost = $_POST['date_lost'] ?? '';
-    $contact_method = $_POST['contact_method'] ?? 'both';
+    // Capture old values for repopulation
+    $old['title'] = isset($_POST['title']) ? trim($_POST['title']) : '';
+    $old['description'] = isset($_POST['description']) ? trim($_POST['description']) : '';
+    $old['category_id'] = isset($_POST['category_id']) ? trim($_POST['category_id']) : '';
+    $old['location_lost'] = isset($_POST['location_lost']) ? trim($_POST['location_lost']) : '';
+    $old['date_lost'] = isset($_POST['date_lost']) ? trim($_POST['date_lost']) : '';
+    $old['contact_method'] = isset($_POST['contact_method']) ? trim($_POST['contact_method']) : 'both';
 
-    // Validate required fields with field-specific errors
-    if (empty($title)) {
-        $field_errors['title'] = 'Item title is required.';
+    // Basic validations similar to report-found
+    if ($old['title'] === '') {
+        $field_errors['title'] = 'Please enter the item title.';
     }
-
-    if (empty($description)) {
-        $field_errors['description'] = 'Description is required.';
+    if ($old['description'] === '') {
+        $field_errors['description'] = 'Please provide a brief description.';
     }
-
-    if (empty($category_id)) {
+    if ($old['category_id'] === '' || !ctype_digit($old['category_id'])) {
         $field_errors['category_id'] = 'Please select a category.';
     }
-
-    if (empty($location_lost)) {
-        $field_errors['location_lost'] = 'Location where you lost the item is required.';
+    if ($old['location_lost'] === '') {
+        $field_errors['location_lost'] = 'Please enter where you lost the item.';
+    }
+    if ($old['date_lost'] === '') {
+        $field_errors['date_lost'] = 'Please select the date lost.';
+    } else {
+        $today = date('Y-m-d');
+        if ($old['date_lost'] > $today) {
+            $field_errors['date_lost'] = 'Date lost cannot be in the future.';
+        }
+    }
+    $valid_methods = ['email', 'phone', 'both'];
+    if ($old['contact_method'] === '' || !in_array($old['contact_method'], $valid_methods)) {
+        $field_errors['contact_method'] = 'Please choose a preferred contact method.';
     }
 
-    if (empty($date_lost)) {
-        $field_errors['date_lost'] = 'Date when you lost the item is required.';
-    } elseif ($date_lost > date('Y-m-d')) {
-        $field_errors['date_lost'] = 'Date cannot be in the future.';
-    }
+    // Prepare sanitized values for DB only after validation
+    $title = mysqli_real_escape_string($connection, $old['title']);
+    $description = mysqli_real_escape_string($connection, $old['description']);
+    $location_lost = mysqli_real_escape_string($connection, $old['location_lost']);
+    $date_lost = $old['date_lost'];
+    $category_id = intval($old['category_id']);
+    $contact_method = $old['contact_method'];
 
     // Only proceed if no field errors
     if (empty($field_errors)) {
@@ -136,10 +156,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 error_log("Lost Item Reported - User ID: " . $user['id'] . " reported item: " . $title . " at " . date('Y-m-d H:i:s'));
                 $success_message = 'Your lost item has been reported successfully!';
 
-                // Clear form data
-                $title = $description = $location_lost = $date_lost = '';
-                $category_id = '';
-                $contact_method = 'both';
+                // Clear old values after success
+                $old = [
+                    'title' => '',
+                    'description' => '',
+                    'category_id' => '',
+                    'location_lost' => '',
+                    'date_lost' => '',
+                    'contact_method' => 'both'
+                ];
             } else {
                 error_log("Lost Item Report Failed - Database error for user ID: " . $user['id'] . " at " . date('Y-m-d H:i:s'));
                 error_log("Lost Item Report Failed - Database error: " . mysqli_error($connection));
@@ -167,17 +192,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <main>
         <!-- Hero Section -->
-        <section class="lost-hero">
-            <div class="container lost-hero-inner">
+        <section class="found-hero">
+            <div class="container found-hero-inner">
                 <h1>Report Lost Item</h1>
                 <p>Help us help you find your lost item by providing detailed information below.</p>
             </div>
         </section>
 
         <!-- Form Section -->
-        <section class="lost-form-section">
+        <section class="found-form-section">
             <div class="container">
-                <div class="lost-form-card fade-in-up">
+                <div class="card found-form-card fade-in-up">
                     <h2>Lost Item Details</h2>
 
                     <?php if (!empty($error_messages)): ?>
@@ -193,39 +218,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
 
                     <form action="" method="post" enctype="multipart/form-data" class="floating-form" novalidate>
+
                         <!-- Item Title -->
                         <div class="form-group <?php echo isset($field_errors['title']) ? 'has-error' : ''; ?>">
-                            <label for="title">Item Title *</label>
-                            <input type="text" id="title" name="title"
-                                class="<?php echo isset($field_errors['title']) ? 'field-error' : ''; ?>"
-                                value="<?php echo htmlspecialchars($title ?? ''); ?>">
+                            <input type="text" id="title" name="title" required placeholder=" " value="<?php echo htmlspecialchars($old['title']); ?>" class="<?php echo isset($field_errors['title']) ? 'field-error' : ''; ?>">
+                            <label for="title">Item Title</label>
                             <?php if (isset($field_errors['title'])): ?>
                                 <span class="field-error-message"><?php echo htmlspecialchars($field_errors['title']); ?></span>
                             <?php endif; ?>
                         </div>
 
-                        <!-- Category -->
-                        <div class="form-group <?php echo isset($field_errors['category_id']) ? 'has-error' : ''; ?>">
-                            <label for="category_id">Category *</label>
-                            <select id="category_id" name="category_id"
-                                class="<?php echo isset($field_errors['category_id']) ? 'field-error' : ''; ?>">
-                                <option value="">Select Category *</option>
-                                <?php foreach ($categories as $category): ?>
-                                    <option value="<?php echo $category['id']; ?>" <?php echo (isset($category_id) && $category_id == $category['id']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($category['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <?php if (isset($field_errors['category_id'])): ?>
-                                <span class="field-error-message"><?php echo htmlspecialchars($field_errors['category_id']); ?></span>
-                            <?php endif; ?>
-                        </div>
-
                         <!-- Description -->
                         <div class="form-group <?php echo isset($field_errors['description']) ? 'has-error' : ''; ?>">
-                            <label for="description">Description *</label>
-                            <textarea id="description" name="description" rows="4"
-                                class="<?php echo isset($field_errors['description']) ? 'field-error' : ''; ?>"><?php echo htmlspecialchars($description ?? ''); ?></textarea>
+                            <textarea id="description" name="description" required placeholder=" " rows="3" class="<?php echo isset($field_errors['description']) ? 'field-error' : ''; ?>"><?php echo htmlspecialchars($old['description']); ?></textarea>
+                            <label for="description">Description</label>
                             <?php if (isset($field_errors['description'])): ?>
                                 <span class="field-error-message"><?php echo htmlspecialchars($field_errors['description']); ?></span>
                             <?php endif; ?>
@@ -233,10 +239,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <!-- Location Lost -->
                         <div class="form-group <?php echo isset($field_errors['location_lost']) ? 'has-error' : ''; ?>">
-                            <label for="location_lost">Where did you lose it? *</label>
-                            <input type="text" id="location_lost" name="location_lost"
-                                class="<?php echo isset($field_errors['location_lost']) ? 'field-error' : ''; ?>"
-                                value="<?php echo htmlspecialchars($location_lost ?? ''); ?>">
+                            <input type="text" id="location_lost" name="location_lost" required placeholder=" " value="<?php echo htmlspecialchars($old['location_lost']); ?>" class="<?php echo isset($field_errors['location_lost']) ? 'field-error' : ''; ?>">
+                            <label for="location_lost">Location Lost</label>
                             <?php if (isset($field_errors['location_lost'])): ?>
                                 <span class="field-error-message"><?php echo htmlspecialchars($field_errors['location_lost']); ?></span>
                             <?php endif; ?>
@@ -244,34 +248,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <!-- Date Lost -->
                         <div class="form-group <?php echo isset($field_errors['date_lost']) ? 'has-error' : ''; ?>">
-                            <label for="date_lost">When did you lose it? *</label>
-                            <input type="date" id="date_lost" name="date_lost"
-                                class="<?php echo isset($field_errors['date_lost']) ? 'field-error' : ''; ?>"
-                                value="<?php echo htmlspecialchars($date_lost ?? ''); ?>">
+                            <input type="date" id="date_lost" name="date_lost" required placeholder=" " value="<?php echo htmlspecialchars($old['date_lost']); ?>" class="<?php echo isset($field_errors['date_lost']) ? 'field-error' : ''; ?>">
+                            <label for="date_lost">Date Lost</label>
                             <?php if (isset($field_errors['date_lost'])): ?>
                                 <span class="field-error-message"><?php echo htmlspecialchars($field_errors['date_lost']); ?></span>
                             <?php endif; ?>
                         </div>
 
-                        <!-- Contact Method -->
-                        <div class="form-group">
-                            <label for="contact_method">Preferred Contact Method</label>
-                            <select id="contact_method" name="contact_method">
-                                <option value="both" <?php echo (isset($contact_method) && $contact_method == 'both') ? 'selected' : ''; ?>>Email and Phone</option>
-                                <option value="email" <?php echo (isset($contact_method) && $contact_method == 'email') ? 'selected' : ''; ?>>Email Only</option>
-                                <option value="phone" <?php echo (isset($contact_method) && $contact_method == 'phone') ? 'selected' : ''; ?>>Phone Only</option>
+                        <!-- Select Category -->
+                        <div class="form-group <?php echo isset($field_errors['category_id']) ? 'has-error' : ''; ?>">
+                            <select name="category_id" required placeholder=" " class="<?php echo isset($field_errors['category_id']) ? 'field-error' : ''; ?>">
+                                <option value="">Select product's Category</option>
+                                <?php foreach ($categories as $category): ?>
+                                    <option value="<?php echo $category['id']; ?>" <?php echo ($old['category_id'] !== '' && $old['category_id'] == (string)$category['id']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($category['name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
+                            <label>Category</label>
+                            <?php if (isset($field_errors['category_id'])): ?>
+                                <span class="field-error-message"><?php echo htmlspecialchars($field_errors['category_id']); ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Upload Image -->
                         <div class="form-group <?php echo isset($field_errors['item_image']) ? 'has-error' : ''; ?>">
-                            <label for="item_image">Upload Image (Optional)</label>
-                            <input type="file" id="item_image" name="item_image" accept="image/*"
-                                class="<?php echo isset($field_errors['item_image']) ? 'field-error' : ''; ?>">
+                            <input type="file" id="item_image" name="item_image" accept="image/*" required class="<?php echo isset($field_errors['item_image']) ? 'field-error' : ''; ?>">
+                            <label for="item_image">Upload Image</label>
                             <?php if (isset($field_errors['item_image'])): ?>
                                 <span class="field-error-message"><?php echo htmlspecialchars($field_errors['item_image']); ?></span>
                             <?php endif; ?>
                             <div id="preview-container"></div>
+                        </div>
+
+                        <!-- Contact method -->
+                        <div class="form-group <?php echo isset($field_errors['contact_method']) ? 'has-error' : ''; ?>">
+                            <select name="contact_method" required placeholder=" " class="<?php echo isset($field_errors['contact_method']) ? 'field-error' : ''; ?>">
+                                <option value="">Select Contact Method</option>
+                                <option value="both" <?php echo $old['contact_method'] === 'both' ? 'selected' : ''; ?>>Both</option>
+                                <option value="email" <?php echo $old['contact_method'] === 'email' ? 'selected' : ''; ?>>Email</option>
+                                <option value="phone" <?php echo $old['contact_method'] === 'phone' ? 'selected' : ''; ?>>Phone</option>
+                            </select>
+                            <label>Preferred Contact Method</label>
+                            <?php if (isset($field_errors['contact_method'])): ?>
+                                <span class="field-error-message"><?php echo htmlspecialchars($field_errors['contact_method']); ?></span>
+                            <?php endif; ?>
                         </div>
 
                         <button type="submit" class="btn-animated">Report Lost Item</button>

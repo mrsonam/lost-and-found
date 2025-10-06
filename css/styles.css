@@ -480,6 +480,97 @@ body {
   padding: 0 20px;
 }
 
+/* Card wrapper for forms */
+.card.found-form-card {
+  padding: 50px 60px !important;
+  margin: 30px 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.card.found-form-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.card.found-form-card h2 {
+  margin: 0 0 30px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+/* Form styling within cards */
+.card.found-form-card .floating-form {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.card.found-form-card .form-group {
+  margin-bottom: 25px;
+  width: 100%;
+  padding: 0;
+}
+
+.card.found-form-card .form-group input,
+.card.found-form-card .form-group textarea,
+.card.found-form-card .form-group select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.card.found-form-card .btn-animated {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.card.found-form-card .btn-animated:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+/* Responsive card styling */
+@media (max-width: 768px) {
+  .card.found-form-card {
+    padding: 30px 25px !important;
+    margin: 20px 0;
+    border-radius: 8px;
+  }
+
+  .card.found-form-card h2 {
+    font-size: 20px;
+    margin-bottom: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card.found-form-card {
+    padding: 25px 20px !important;
+    margin: 15px 0;
+  }
+}
+
 /* Section description aligned with margin */
 .report-found-container h2,
 .report-found-container p {
@@ -517,8 +608,22 @@ body {
   color: #555;
   pointer-events: none;
   transition: all 0.3s ease;
-  background: none; /* remove any background */
+  background: #fff; /* white background to cover border */
   padding: 0 4px; /* small padding to avoid touching border */
+  z-index: 1;
+}
+
+/* Required field asterisk */
+.floating-form label::after {
+  content: "";
+}
+
+.floating-form input[required] + label::after,
+.floating-form textarea[required] + label::after,
+.floating-form select[required] + label::after {
+  content: " *";
+  color: #dc2626;
+  font-weight: bold;
 }
 
 /* Move label on focus or if input has value */
@@ -528,10 +633,20 @@ body {
 .floating-form textarea:not(:placeholder-shown) + label,
 .floating-form select:focus + label,
 .floating-form select:not(:placeholder-shown) + label {
-  top: -10px; /* move above input border */
+  top: 0; /* move to top border of input */
   left: 10px;
   font-size: 13px;
   color: #2563eb;
+  background: #fff; /* ensure white background covers border */
+}
+
+/* Float label for selects when valid (required + non-empty selection) */
+.floating-form select:valid + label {
+  top: 0;
+  left: 10px;
+  font-size: 13px;
+  color: #2563eb;
+  background: #fff;
 }
 
 /* Focus underline animation */
@@ -611,61 +726,6 @@ body {
 .contact-form-section {
   padding: 60px 20px;
   background: #f9fafb;
-}
-.contact-form-card {
-  max-width: 700px;
-  margin: 0 auto;
-  background: #fff;
-  border-radius: 12px;
-  padding: 40px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-.floating-form .form-group {
-  position: relative;
-  margin-bottom: 25px;
-}
-.floating-form input,
-.floating-form textarea {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background: none;
-  outline: none;
-}
-.floating-form label {
-  position: absolute;
-  top: 50%;
-  left: 14px;
-  transform: translateY(-50%);
-  background: #fff;
-  padding: 0 6px;
-  color: #888;
-  transition: all 0.3s ease;
-  pointer-events: none;
-}
-.floating-form input:focus + label,
-.floating-form input:not(:placeholder-shown) + label,
-.floating-form textarea:focus + label,
-.floating-form textarea:not(:placeholder-shown) + label {
-  top: -8px;
-  left: 10px;
-  font-size: 13px;
-  color: #2563eb;
-}
-.btn-animated {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  padding: 14px 30px;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: transform 0.3s, background 0.3s;
-}
-.btn-animated:hover {
-  transform: scale(1.05);
-  background: #1e40af;
 }
 
 /* Map */
@@ -1013,98 +1073,6 @@ body {
 .lost-form-section {
   padding: 40px 0;
   background: #ffffff;
-}
-
-.lost-form-card {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  padding: 30px;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.lost-form-card h2 {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 0 20px 0;
-  color: #1f2937;
-  text-align: left;
-}
-
-/* Simple Form Styles */
-.lost-form-card .floating-form {
-  display: block;
-}
-
-/* Override any floating form styles */
-.lost-form-card .floating-form .form-group {
-  position: relative;
-}
-
-.lost-form-card .floating-form .form-group label {
-  position: static !important;
-  transform: none !important;
-  top: auto !important;
-  left: auto !important;
-  background: none !important;
-  padding: 0 !important;
-  pointer-events: auto !important;
-  font-size: 14px !important;
-  color: #374151 !important;
-  margin-bottom: 5px !important;
-}
-
-.lost-form-card .form-group {
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.lost-form-card .form-group label {
-  display: block;
-  font-weight: 500;
-  color: #374151;
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-.lost-form-card .form-group input,
-.lost-form-card .form-group select,
-.lost-form-card .form-group textarea {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 14px;
-  background: #ffffff;
-  font-family: inherit;
-}
-
-.lost-form-card .form-group input:focus,
-.lost-form-card .form-group select:focus,
-.lost-form-card .form-group textarea:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px #2563eb;
-}
-
-/* File Input Styling */
-.lost-form-card .form-group input[type="file"] {
-  padding: 6px 8px;
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-  cursor: pointer;
-}
-
-/* Select Dropdown Styling */
-.lost-form-card .form-group select {
-  cursor: pointer;
-}
-
-/* Textarea Styling */
-.lost-form-card .form-group textarea {
-  resize: vertical;
-  min-height: 80px;
 }
 
 /* Simple Submit Button */
@@ -1520,6 +1488,25 @@ mark.item-highlight {
   color: #dc2626 !important;
 }
 
+/* Keep labels floated when a field has an error (even if empty) */
+.floating-form .form-group.has-error label,
+.floating-form input.field-error + label,
+.floating-form textarea.field-error + label,
+.floating-form select.field-error + label {
+  top: 0 !important;
+  left: 10px !important;
+  font-size: 13px !important;
+  background: #fff !important;
+}
+
+/* Float label on autofill */
+.floating-form input:-webkit-autofill + label {
+  top: 0;
+  left: 10px;
+  font-size: 13px;
+  background: #fff;
+}
+
 /* Error message container */
 .error-messages {
   margin-bottom: 15px;
@@ -1533,7 +1520,217 @@ mark.item-highlight {
   margin-bottom: 8px;
   font-size: 14px;
 }
+/* Modal styles for item preview */
+.item-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #777;
+  transition: color 0.2s;
+}
+
+.close-modal:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.modal-details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-label {
+  font-weight: bold;
+  min-width: 120px;
+  color: #555;
+}
+
+.detail-value {
+  flex: 1;
+}
+
+.modal-status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.status-found {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-lost {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-other {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+
+/* Make items clickable */
+.item {
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
 
 /* ========================================
-   SEARCH PAGE STYLES END
-   ======================================== */
+    SEARCH PAGE STYLES END
+    ======================================== */
+
+/* ========================================
+    SEARCH ICON STYLES
+    ======================================== */
+
+.search-icon {
+  filter: brightness(0) invert(1);
+}
+
+/* ========================================
+    ERROR MESSAGE STYLES
+    ======================================== */
+
+.no-items.error-message {
+  color: #e74c3c;
+}
+
+/* ========================================
+    FOOTER BOTTOM STYLES
+    ======================================== */
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 15px;
+}
+
+/* ========================================
+    LOG VIEWER STYLES
+    ======================================== */
+
+.log-success {
+  color: green;
+}
+
+.log-content {
+  background: #f5f5f5;
+  padding: 10px;
+  border: 1px solid #ddd;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* ========================================
+    POPUP MESSAGE STYLES
+    ======================================== */
+
+.popup-message {
+  display: none;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #16a34a;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+  z-index: 9999;
+  animation: fadeInOut 3s forwards;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}

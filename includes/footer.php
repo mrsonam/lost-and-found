@@ -15,16 +15,6 @@ echo '
       </div>
     </div>
 
-    <!-- Quick Links -->
-    <div class="footer-col">
-      <h4>Quick Links</h4>
-      <ul>
-        <li><a href="report-lost.php">Report Lost</a></li>
-        <li><a href="report-found.php">Report Found</a></li>
-        <li><a href="search.php">Search Items</a></li>
-        <li><a href="contact.php">Contact Us</a></li>
-      </ul>
-    </div>
 
     <!-- Contact Info & CTA -->
     <div class="footer-col">
@@ -38,7 +28,8 @@ echo '
 
   <!-- Bottom Bar -->
   <h3><font color = "#ffffffff"><marquee> Stay connected with us, report or search items quickly!</marquee></font></h3>
-  <div class="container footer-bottom" style="text-align:center; padding-top:15px;">
+  <div class="container footer-bottom">
     <p>© 2025 Lost & Found. All rights reserved.</p>
   </div>
-</footer>';
+</footer>
+<script src="js/main.js"></script>';

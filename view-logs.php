@@ -26,7 +26,7 @@ echo "<p><a href='?refresh=1'>Refresh</a> | <a href='?clear=1'>Clear Log</a></p>
 if (isset($_GET['clear'])) {
     if (file_exists($error_log_path)) {
         file_put_contents($error_log_path, '');
-        echo "<p style='color: green;'>Log cleared successfully!</p>";
+        echo "<p class='log-success'>Log cleared successfully!</p>";
     }
 }
 
@@ -35,7 +35,7 @@ if (file_exists($error_log_path)) {
     $log_content = file_get_contents($error_log_path);
     if (!empty($log_content)) {
         echo "<h3>Recent Log Entries:</h3>";
-        echo "<pre style='background: #f5f5f5; padding: 10px; border: 1px solid #ddd; max-height: 500px; overflow-y: auto;'>";
+        echo "<pre class='log-content'>";
         echo htmlspecialchars($log_content);
         echo "</pre>";
     } else {
